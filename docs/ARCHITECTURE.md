@@ -7,7 +7,7 @@ Source material for the report sections "Tech stack selection and justification"
 | Layer | Choice | Why (traced to our requirements) |
 |-------|--------|----------------------------------|
 | Frontend | **React Native + Expo (TypeScript)** | NFR05 needs Android and iOS: one codebase covers both. The group already knows JavaScript from the HTML/CSS/JS prototype. Expo Go lets everyone run the app on a phone without Android Studio. TypeScript catches shape mistakes in the shared order data. |
-| Navigation | **Expo Router** (file-based) | Each role gets its own route folder: `(customer)`, `(cook)`, `(rider)`. Members edit separate folders, so merge conflicts are rare. |
+| Navigation | **Expo Router** (file-based) | Each role gets its own route folder: `customer/`, `cook/`, `rider/`. Members edit separate folders, so merge conflicts are rare. |
 | Backend / database | **Firebase Firestore** | One order is shared by three roles. Firestore's real-time listeners (`onSnapshot`) deliver FR04, FR07 and NFR08 without writing a server. NoSQL documents fit orders and menus. Built-in offline cache helps issue U10 (poor connection). Free tier is enough. |
 | Authentication | **Firebase Authentication** | NFR02: secure sign-in with hashed passwords handled by Google, not by us. Role is stored on the user document. |
 | Maps / location | `react-native-maps`, `expo-location` | C6 and R2 show the rider on a map (FR04, FR09). |
@@ -22,43 +22,57 @@ Alternatives considered: Flutter (new language for everyone), native Android (no
 
 ```
 mobile/
+├── scripts/seed.ts           Seeds test accounts, cooks and dishes (npm run seed)
+├── __tests__/                Jest tests (npm test)
 └── src/
     ├── app/                  Screens only (Expo Router). One folder per role.
-    │   ├── _layout.tsx       Root: auth gate, redirect by role
+    │   ├── _layout.tsx       Root: providers + role guard (Stack.Protected)
+    │   ├── index.tsx         "/" sends the user to sign-in or the home tab of their role
     │   ├── (auth)/           C1 sign-in / register
-    │   ├── (customer)/       C2 C3 C4 C5 C6 C7 C8 + customer tab layout
-    │   ├── (cook)/           S1 S2 S3 S4 + cook tab layout
-    │   └── (rider)/          R1 R2 + rider tab layout
-    ├── components/           Shared UI: Button, Card, Badge, StarRating, Toast...
-    ├── constants/            theme (colours, font sizes), static labels
-    ├── context/              AuthContext, CartContext
+    │   ├── customer/         C2 C3 C4 C5 C6 C7 C8
+    │   │   ├── (tabs)/       Bottom tabs: home, favourites, orders, profile
+    │   │   └── ...           Detail screens open above the tabs
+    │   ├── cook/             S1 S2 S3 S4
+    │   │   ├── (tabs)/       Bottom tabs: orders, menu, sales, more
+    │   │   └── order/        S2 detail screen
+    │   └── rider/            R1 R2
+    │       └── (tabs)/       Bottom tabs: requests, trip, profile
+    ├── components/           Shared UI: Button, Card, Badge, StarRating, TextField, Screen, Toast
+    ├── constants/            theme.ts (colours, spacing, font sizes)
+    ├── context/              AuthContext (CartContext to be added)
     ├── features/             Per-member helpers (customer/, cook/, rider/)
     ├── hooks/                useOrder, useDishes, useCook...
-    ├── services/             firebase.ts + one file per collection (orders.ts, dishes.ts...)
+    ├── services/             firebase.ts, users.ts + one file per collection (orders.ts, dishes.ts...)
     ├── types/                Shared TypeScript types
-    └── utils/                formatting, date and price helpers
+    └── utils/                auth-errors.ts, routes.ts, formatting helpers
 ```
 
 Rules: screens call **services**; services talk to Firestore; screens never call Firestore directly. This keeps CRUD logic testable and easy to explain in the viva.
 
-Screen to route mapping (suggested file names):
+**How routing works.** The root layout wraps the app in `AuthProvider` and `ToastProvider`. `Stack.Protected` only lets a signed-in user into the folder of their own role, and sends everyone else back to `/`, which redirects. The tab layouts match the bottom navigation in the Milestone 02 prototype. Every interface already has a placeholder screen file: the owner **replaces the whole file** (and drops the `PlaceholderScreen` import).
 
-| ID | File |
-|----|------|
-| C1 | `src/app/(auth)/sign-in.tsx` |
-| C2 | `src/app/(customer)/index.tsx` |
-| C3 | `src/app/(customer)/cook/[id].tsx` |
-| C4 | `src/app/(customer)/dish/[id].tsx` |
-| C5 | `src/app/(customer)/checkout.tsx` |
-| C6 | `src/app/(customer)/track/[orderId].tsx` |
-| C7 | `src/app/(customer)/review/[orderId].tsx` |
-| C8 | `src/app/(customer)/favourites.tsx` |
-| S1 | `src/app/(cook)/index.tsx` |
-| S2 | `src/app/(cook)/order/[id].tsx` |
-| S3 | `src/app/(cook)/menu.tsx` |
-| S4 | `src/app/(cook)/sales.tsx` |
-| R1 | `src/app/(rider)/index.tsx` |
-| R2 | `src/app/(rider)/trip/[id].tsx` |
+Screen to file mapping (URL in the last column):
+
+| ID | File | URL |
+|----|------|-----|
+| C1 | `src/app/(auth)/sign-in.tsx` | `/sign-in` |
+| C2 | `src/app/customer/(tabs)/home.tsx` | `/customer/home` |
+| C3 | `src/app/customer/cook/[id].tsx` | `/customer/cook/<cookId>` |
+| C4 | `src/app/customer/dish/[id].tsx` | `/customer/dish/<dishId>` |
+| C5 | `src/app/customer/checkout.tsx` | `/customer/checkout` |
+| C6 | `src/app/customer/(tabs)/orders.tsx` (list) and `src/app/customer/track/[orderId].tsx` | `/customer/orders`, `/customer/track/<orderId>` |
+| C7 | `src/app/customer/review/[orderId].tsx` | `/customer/review/<orderId>` |
+| C8 | `src/app/customer/(tabs)/favourites.tsx` | `/customer/favourites` |
+| S1 | `src/app/cook/(tabs)/orders.tsx` | `/cook/orders` |
+| S2 | `src/app/cook/order/[id].tsx` | `/cook/order/<orderId>` |
+| S3 | `src/app/cook/(tabs)/menu.tsx` | `/cook/menu` |
+| S4 | `src/app/cook/(tabs)/sales.tsx` | `/cook/sales` |
+| R1 | `src/app/rider/(tabs)/requests.tsx` | `/rider/requests` |
+| R2 | `src/app/rider/(tabs)/trip.tsx` | `/rider/trip` |
+
+The Profile / More tabs (`customer/(tabs)/profile.tsx`, `cook/(tabs)/more.tsx`, `rider/(tabs)/profile.tsx`) show `AccountPanel` with Sign out. C1's owner extends it (edit profile, delete account).
+
+Navigate with `router.push('/customer/cook/abc')` (import `router` from `expo-router`). Route paths are type-checked using types that `npx expo start` generates, so start the dev server once before running `npx tsc --noEmit`.
 
 ## 3. Data model (Firestore)
 
@@ -67,7 +81,7 @@ Changing a field name affects teammates: tell the group first.
 | Collection | Document id | Fields |
 |-----------|-------------|--------|
 | `users` | auth uid | `name`, `email`, `phone`, `role` (`customer`/`cook`/`rider`), `language`, `createdAt` |
-| `cooks` | cook's uid | `displayName`, `bio`, `area`, `verified`, `rating`, `reviewCount`, `hygieneScore`, `acceptsPreorder`, `cutoffTime` |
+| `cooks` | cook's uid | `displayName`, `bio`, `area`, `verified`, `rating`, `reviewCount`, `hygieneScore`, `acceptsPreorder`, `cutoffTime`, `tags[]`, `etaMin`, `etaMax`, `distanceKm` |
 | `dishes` | auto | `cookId`, `name`, `price`, `ingredients[]`, `allergens[]`, `nutrition{kcal,protein,carbs,fat}`, `available`, `portionsLeft`, `photoUrl` |
 | `carts` | customer uid | `cookId`, `items[{dishId,name,price,qty,note}]` |
 | `orders` | auto | `customerId`, `cookId`, `riderId` (null until accepted), `items[]`, `total`, `schedule`, `address`, `landmark`, `paymentMethod`, `paymentStatus`, `status`, `declineReason`, `riderLocation{lat,lng}`, `createdAt`, `updatedAt` |

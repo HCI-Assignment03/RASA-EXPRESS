@@ -78,15 +78,9 @@ and this block at the top level of `mobile/package.json`:
 "jest": { "preset": "jest-expo" }
 ```
 
-## 6. Create the folder structure
+## 6. Folder structure
 
-From the repo root (PowerShell):
-
-```powershell
-./scripts/create-structure.ps1
-```
-
-It creates the route folders per role and the `src/` folders, each with a `.gitkeep` so Git keeps them. See `docs/ARCHITECTURE.md` for what goes where.
+Already in the repo: the role folders, tab layouts and a placeholder screen for every interface are committed, so there is nothing to create. See `docs/ARCHITECTURE.md`, section 2.
 
 ## 7. Create `mobile/.env` and check the app still runs
 
@@ -102,17 +96,37 @@ Open `mobile/.env` in VS Code and paste the six Firebase values from step 2.7 af
 
 Review with `git status` (no `node_modules`, no `.env`), then commit and push in your own words. Tell the team to follow `docs/SETUP.md`.
 
-## 9. Then build the foundation (before others start their screens)
+## 9. Foundation (done before the others start their screens)
 
-Teammates need these on `main` to build on. Suggested order, aim to finish within a day:
+Teammates build on these. All of them are in the repo:
 
-1. `src/services/firebase.ts`: initialise Firebase with the env values
+1. `src/services/firebase.ts`: Firebase init with the env values (auth sessions persist)
 2. `src/types/`: TypeScript types matching the data model in `docs/ARCHITECTURE.md`
-3. `src/context/AuthContext`: sign-in state and user role
-4. Root `src/app/_layout.tsx`: redirect by role to `(customer)`, `(cook)` or `(rider)`
-5. Role tab layouts (bottom navigation per role)
-6. `src/constants/theme.ts` and the basic shared components (Button, Card, Badge, Toast)
-7. A seed data script or manual Firestore entries: 3 cooks, ~8 dishes, 3 test accounts (1 per role)
+3. `src/context/AuthContext.tsx`: `useAuth()` gives status, profile (with role), register, signIn, signOut, updateProfile, deleteAccount
+4. `src/app/_layout.tsx` and `src/app/index.tsx`: role guard and redirect to `customer`, `cook` or `rider`
+5. Role tab layouts matching the Milestone 02 bottom navigation, and a placeholder screen for each interface
+6. `src/constants/theme.ts` and shared components (Button, Card, Badge, StarRating, TextField, Screen, Toast)
+7. `scripts/seed.ts`: 5 test accounts, 3 cooks, 8 dishes
+
+### Run the seed (once, by the lead)
+
+Needs Email/Password sign-in enabled and `firebase/firestore.rules` published (step 2). From `mobile/`:
+
+```bash
+npm run seed
+```
+
+It signs in to each test account, creating it the first time, and writes the cooks and dishes. It is safe to run again. Needs Node 22.18 or newer. The accounts are:
+
+| Role | Email |
+|------|-------|
+| Customer | `kawya.customer@rasaexpress.test` |
+| Rider | `imasha.rider@rasaexpress.test` |
+| Cook | `bhanuka.cook@rasaexpress.test` |
+| Cook | `nimali.cook@rasaexpress.test` |
+| Cook | `sunethra.cook@rasaexpress.test` |
+
+The password is `SEED_PASSWORD` at the top of `mobile/scripts/seed.ts`. These are throw-away accounts for the shared development project only. Delete them in the Firebase console before sharing the project beyond the group.
 
 ## Build the APK (later, when the app works)
 

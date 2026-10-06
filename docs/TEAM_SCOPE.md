@@ -8,12 +8,12 @@ Assignment rule: each member implements the interfaces in their own workload, wi
 
 | Member | Student ID | Interfaces | Route folder (owner) |
 |--------|-----------|------------|----------------------|
-| Kulathunga V N (lead) | IT23561298 | C1 Welcome & sign-in, C2 Discover cooks, C3 Cook profile & menu + **foundation** (below) | `src/app/(auth)`, `src/app/(customer)` C2/C3 files |
-| Fernando W M N | IT23569386 | C5 Checkout & payment, C6 Live order tracking, C7 Rate & review | `src/app/(customer)` C5/C6/C7 files |
-| Manawadu D G | IT23565876 | S1 Orders dashboard, S2 Order detail, S3 Menu manager, S4 Sales & payments | `src/app/(cook)` |
-| Lowe W G N | IT23562592 | R1 Delivery requests, R2 Active trip & navigation, C4 Dish details, C8 Favourites & alerts | `src/app/(rider)`, `src/app/(customer)` C4/C8 files |
+| Kulathunga V N (lead) | IT23561298 | C1 Welcome & sign-in, C2 Discover cooks, C3 Cook profile & menu + **foundation** (below) | `src/app/(auth)`, `customer/(tabs)/home.tsx` (C2), `customer/cook/` (C3) |
+| Fernando W M N | IT23569386 | C5 Checkout & payment, C6 Live order tracking, C7 Rate & review | `customer/checkout.tsx` (C5), `customer/(tabs)/orders.tsx` and `customer/track/` (C6), `customer/review/` (C7) |
+| Manawadu D G | IT23565876 | S1 Orders dashboard, S2 Order detail, S3 Menu manager, S4 Sales & payments | `src/app/cook/` |
+| Lowe W G N | IT23562592 | R1 Delivery requests, R2 Active trip & navigation, C4 Dish details, C8 Favourites & alerts | `src/app/rider/`, `customer/dish/` (C4), `customer/(tabs)/favourites.tsx` (C8) |
 
-**Foundation (lead, done first, everyone depends on it):** Firebase init, auth context and role routing, theme (orange #F26B1D, cream background), shared UI components, TypeScript types, seed data, role bottom-tab shells.
+**Foundation (lead, done first, everyone depends on it):** Firebase init, auth context and role routing, theme (orange #F26B1D, cream background), shared UI components, TypeScript types, seed data, role bottom-tab shells. All of this is in the repo, and every interface already has a placeholder screen to replace (see `docs/ARCHITECTURE.md`, section 2).
 
 ## 2. CRUD matrix (at least 2 per interface)
 

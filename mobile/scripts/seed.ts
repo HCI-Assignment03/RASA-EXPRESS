@@ -1,0 +1,301 @@
+/**
+ * Seeds the shared Firebase project with test accounts, cooks and dishes
+ * taken from the Milestone 02 prototype, so every member tests against the same data.
+ *
+ *   cd mobile
+ *   npm run seed
+ *
+ * Safe to run again: accounts are reused and documents are overwritten with the same ids.
+ * Needs Node 22.18+ (or 24) and a filled-in mobile/.env. Email/Password sign-in must be
+ * enabled and firebase/firestore.rules must be published in the Firebase console first.
+ */
+import { initializeApp } from 'firebase/app';
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  type Auth,
+} from 'firebase/auth';
+import { doc, getFirestore, serverTimestamp, setDoc, type Firestore } from 'firebase/firestore';
+
+import type { Cook, Dish, Role } from '../src/types';
+
+// Test accounts for the shared development project only. Not real people.
+const SEED_PASSWORD = 'Rasa@2026';
+
+type SeedUser = {
+  key: string;
+  email: string;
+  name: string;
+  phone: string;
+  role: Role;
+  cook?: Cook;
+  dishes?: Omit<Dish, 'cookId' | 'photoUrl'>[];
+};
+
+const NONE: string[] = [];
+
+const SEED_USERS: SeedUser[] = [
+  {
+    key: 'kawya',
+    email: 'kawya.customer@rasaexpress.test',
+    name: 'Kawya A.',
+    phone: '0771234567',
+    role: 'customer',
+  },
+  {
+    key: 'imasha',
+    email: 'imasha.rider@rasaexpress.test',
+    name: 'Imasha Lakshan',
+    phone: '0772345678',
+    role: 'rider',
+  },
+  {
+    key: 'bhanuka',
+    email: 'bhanuka.cook@rasaexpress.test',
+    name: 'Bhanuka A.',
+    phone: '0773456789',
+    role: 'cook',
+    cook: {
+      displayName: "Bhanuka's Kitchen",
+      bio: 'Home-cooked Sri Lankan rice and curry, made fresh every morning.',
+      area: 'Galle Fort',
+      verified: true,
+      rating: 4.8,
+      reviewCount: 126,
+      hygieneScore: 4.9,
+      acceptsPreorder: true,
+      cutoffTime: '18:00',
+      tags: ['Rice & Curry', 'Lunch packets'],
+      etaMin: 30,
+      etaMax: 40,
+      distanceKm: 1.2,
+    },
+    dishes: [
+      {
+        name: 'Chicken Rice & Curry',
+        price: 650,
+        ingredients: ['Samba rice', 'Chicken', 'Coconut', 'Dhal', 'Curry leaves', 'Chilli'],
+        allergens: NONE,
+        nutrition: { kcal: 720, protein: 34, carbs: 88, fat: 22 },
+        available: true,
+        portionsLeft: 12,
+      },
+      {
+        name: 'Fish Ambul Thiyal Meal',
+        price: 750,
+        ingredients: ['Samba rice', 'Tuna', 'Goraka', 'Black pepper', 'Dhal'],
+        allergens: ['Fish'],
+        nutrition: { kcal: 680, protein: 38, carbs: 80, fat: 18 },
+        available: true,
+        portionsLeft: 8,
+      },
+      {
+        name: 'Vegetable Rice & Curry',
+        price: 550,
+        ingredients: ['Samba rice', 'Seasonal vegetables', 'Coconut', 'Dhal', 'Papadam'],
+        allergens: NONE,
+        nutrition: { kcal: 560, protein: 16, carbs: 92, fat: 14 },
+        available: true,
+        portionsLeft: 10,
+      },
+      {
+        name: 'Watalappan',
+        price: 300,
+        ingredients: ['Coconut milk', 'Jaggery', 'Egg', 'Cashew', 'Cardamom'],
+        allergens: ['Egg', 'Tree nuts'],
+        nutrition: { kcal: 340, protein: 7, carbs: 46, fat: 14 },
+        available: false,
+        portionsLeft: 0,
+      },
+    ],
+  },
+  {
+    key: 'nimali',
+    email: 'nimali.cook@rasaexpress.test',
+    name: 'Nimali P.',
+    phone: '0774567890',
+    role: 'cook',
+    cook: {
+      displayName: "Nimali's Hoppers",
+      bio: 'Fresh hoppers and string hoppers for breakfast and dinner.',
+      area: 'Galle Fort',
+      verified: true,
+      rating: 4.7,
+      reviewCount: 84,
+      hygieneScore: 4.8,
+      acceptsPreorder: false,
+      cutoffTime: '18:00',
+      tags: ['Hoppers', 'String hoppers'],
+      etaMin: 35,
+      etaMax: 45,
+      distanceKm: 2.0,
+    },
+    dishes: [
+      {
+        name: 'Egg Hoppers (3)',
+        price: 450,
+        ingredients: ['Rice flour', 'Coconut milk', 'Egg', 'Yeast'],
+        allergens: ['Egg'],
+        nutrition: { kcal: 420, protein: 14, carbs: 58, fat: 14 },
+        available: true,
+        portionsLeft: 15,
+      },
+      {
+        name: 'String Hoppers & Sambol',
+        price: 400,
+        ingredients: ['Rice flour', 'Coconut sambol', 'Dhal curry'],
+        allergens: NONE,
+        nutrition: { kcal: 460, protein: 11, carbs: 78, fat: 10 },
+        available: true,
+        portionsLeft: 20,
+      },
+    ],
+  },
+  {
+    key: 'sunethra',
+    email: 'sunethra.cook@rasaexpress.test',
+    name: 'Sunethra W.',
+    phone: '0775678901',
+    role: 'cook',
+    cook: {
+      displayName: "Sunethra's Short Eats",
+      bio: 'Crispy short eats and sweet treats for tea time and parties.',
+      area: 'Katugoda',
+      verified: true,
+      rating: 4.6,
+      reviewCount: 52,
+      hygieneScore: 4.7,
+      acceptsPreorder: true,
+      cutoffTime: '17:00',
+      tags: ['Short eats', 'Desserts'],
+      etaMin: 40,
+      etaMax: 50,
+      distanceKm: 3.1,
+    },
+    dishes: [
+      {
+        name: 'Fish Cutlets (4)',
+        price: 480,
+        ingredients: ['Tuna', 'Potato', 'Breadcrumbs', 'Onion', 'Chilli'],
+        allergens: ['Fish', 'Gluten'],
+        nutrition: { kcal: 380, protein: 20, carbs: 34, fat: 17 },
+        available: true,
+        portionsLeft: 18,
+      },
+      {
+        name: 'Vegetable Rolls (4)',
+        price: 420,
+        ingredients: ['Carrot', 'Potato', 'Leeks', 'Flour', 'Egg'],
+        allergens: ['Egg', 'Gluten'],
+        nutrition: { kcal: 360, protein: 9, carbs: 40, fat: 18 },
+        available: true,
+        portionsLeft: 14,
+      },
+    ],
+  },
+];
+
+// Set in main() once the .env values have been checked.
+let auth: Auth;
+let db: Firestore;
+
+function errorCode(error: unknown): string {
+  return typeof error === 'object' && error !== null && 'code' in error
+    ? String((error as { code: unknown }).code)
+    : '';
+}
+
+function slug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/** Signs in to the test account, creating it the first time. Returns its uid. */
+async function signInOrCreate(user: SeedUser): Promise<string> {
+  try {
+    const credential = await signInWithEmailAndPassword(auth, user.email, SEED_PASSWORD);
+    return credential.user.uid;
+  } catch (error) {
+    const code = errorCode(error);
+    if (code !== 'auth/invalid-credential' && code !== 'auth/user-not-found') throw error;
+  }
+  try {
+    const credential = await createUserWithEmailAndPassword(auth, user.email, SEED_PASSWORD);
+    return credential.user.uid;
+  } catch (error) {
+    if (errorCode(error) === 'auth/email-already-in-use') {
+      throw new Error(
+        `${user.email} already exists with a different password. Delete it in the Firebase console and run again.`,
+      );
+    }
+    throw error;
+  }
+}
+
+async function seedUser(user: SeedUser): Promise<void> {
+  const uid = await signInOrCreate(user);
+
+  await setDoc(
+    doc(db, 'users', uid),
+    {
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      language: 'en',
+      createdAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
+
+  if (user.cook) {
+    await setDoc(doc(db, 'cooks', uid), user.cook);
+  }
+
+  for (const dish of user.dishes ?? []) {
+    const document: Dish = { ...dish, cookId: uid, photoUrl: '' };
+    await setDoc(doc(db, 'dishes', `${user.key}-${slug(dish.name)}`), document);
+  }
+
+  await signOut(auth);
+  console.log(`ok  ${user.role.padEnd(8)} ${user.email}`);
+}
+
+async function main(): Promise<void> {
+  const missing = ['EXPO_PUBLIC_FIREBASE_API_KEY', 'EXPO_PUBLIC_FIREBASE_PROJECT_ID'].filter(
+    (name) => !process.env[name],
+  );
+  if (missing.length > 0) {
+    throw new Error(`Missing ${missing.join(', ')}. Fill in mobile/.env first.`);
+  }
+
+  const app = initializeApp({
+    apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  });
+  auth = getAuth(app);
+  db = getFirestore(app);
+
+  console.log(`Seeding project ${process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID} ...`);
+  for (const user of SEED_USERS) {
+    await seedUser(user);
+  }
+  console.log(
+    '\nDone. The password for every test account is SEED_PASSWORD in mobile/scripts/seed.ts.',
+  );
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error('\nSeed failed:', error instanceof Error ? error.message : error);
+    process.exit(1);
+  });

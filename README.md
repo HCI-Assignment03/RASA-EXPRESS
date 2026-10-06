@@ -39,8 +39,7 @@ RASA-EXPRESS/
 ├── config/        env.example (copy to mobile/.env)
 ├── docs/          Setup, team scope, architecture, git workflow, plan, deviations
 ├── testing/       Functional test cases, traceability matrix, usability testing
-├── report/        Consolidated report drafts and screenshots
-└── scripts/       Helper scripts
+└── report/        Consolidated report drafts and screenshots
 ```
 
 ## Documentation

@@ -97,6 +97,23 @@ Send a screenshot of your running app to the group chat.
 
 ---
 
+## Test accounts and checks
+
+The lead runs `npm run seed` once. It creates shared test accounts and sample cooks and dishes (customer, rider and three cooks). Their emails are listed in `docs/LEAD_SETUP.md`, and the password is `SEED_PASSWORD` in `mobile/scripts/seed.ts`. Sign in with the account for your role once the sign-in screen (C1) is built. Do not delete other people's data.
+
+Every interface already has a placeholder screen. Replace the whole file for your interface (see `docs/TEAM_SCOPE.md`) and remove the `PlaceholderScreen` import.
+
+Before opening a pull request, run from `mobile/`:
+
+```bash
+npx tsc --noEmit    # types (run npx expo start once first so route types exist)
+npm run lint        # code problems
+npm run format      # tidy formatting
+npm test            # automated tests
+```
+
+---
+
 ## Daily routine
 
 ```bash
