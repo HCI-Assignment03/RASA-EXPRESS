@@ -6,7 +6,7 @@ The assignment requires every difference between the app and the prototype to be
 |---|-----------|-----------------|-----------------|--------|----------|------|
 | D01 | C5 | Four payment methods shown | Card payment is a simulated form (no real gateway); online banking is a "mark as pending" flow | No live payment gateway in a student project; keeps NFR03 testable with test data | | |
 | D02 | C1 | Mobile number with a 4-digit SMS code, no password | Email and password (Firebase Auth). The mobile number is stored on the profile only | SMS sign-in needs a paid phone-auth plan and a native build; it does not run in Expo Go | | |
-| D03 | C1 | Language switch (Sinhala/Tamil/English) is a mock-up | _decide: implement or keep as a stored preference only_ | | | |
+| D03 | C1 | Language switch (Sinhala/Tamil/English) is a mock-up | The choice is saved on the profile at sign-up (`language`). Screen text stays English | Translating every screen does not fit the schedule; the stored preference keeps the data model ready | Kulathunga | 07.10.2026 |
 | D04 | R2 | Map with moving rider | _decide: real map or simulated route_ | | | |
 | D05 | C2, C3 | Distance and delivery time on cook cards | Fixed values stored on each cook (`distanceKm`, `etaMin`, `etaMax`) | No live geolocation or routing service | | |
 | D06 | C6 | Order tracking shown inside the tab bar (Orders highlighted) | Orders tab lists orders; tracking opens as a detail screen above the tabs | Expo Router stack above tabs is simpler; same information | | |
