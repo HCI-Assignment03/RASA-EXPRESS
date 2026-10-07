@@ -26,7 +26,7 @@ import {
   type Firestore,
 } from 'firebase/firestore';
 
-import type { AppNotification, Cook, Dish, Review, Role } from '../src/types';
+import type { AppNotification, Cook, Dish, Order, Review, Role } from '../src/types';
 
 // Test accounts for the shared development project only. Not real people.
 const SEED_PASSWORD = 'Rasa@2026';
@@ -265,6 +265,32 @@ const SEED_NOTIFICATIONS: { text: string; daysAgo: number; read: boolean }[] = [
   { text: "Sunethra's Short Eats has new short eats today.", daysAgo: 3, read: true },
 ];
 
+// Orders the cook has marked ready and no rider has taken yet, so R1 has requests to show.
+// Running the seed again puts them back to "no rider", which is handy for testing.
+const SEED_REQUESTS = [
+  {
+    cook: 'bhanuka',
+    address: '12 Lighthouse Street, Galle Fort',
+    landmark: 'Opposite the Dutch Hospital',
+    paymentMethod: 'cash' as const,
+    items: [{ name: 'Chicken Rice & Curry', price: 650, qty: 2, note: 'Less spicy' }],
+  },
+  {
+    cook: 'nimali',
+    address: '45 Pedlar Street, Galle Fort',
+    landmark: 'Next to the Fort Bazaar',
+    paymentMethod: 'cash' as const,
+    items: [{ name: 'Egg Hoppers (3)', price: 450, qty: 3, note: '' }],
+  },
+  {
+    cook: 'sunethra',
+    address: '8 Church Street, Galle Fort',
+    landmark: 'Beside the Groote Kerk',
+    paymentMethod: 'card' as const,
+    items: [{ name: 'Short Eats Box', price: 600, qty: 1, note: 'No onions' }],
+  },
+];
+
 // Set in main() once the .env values have been checked.
 let auth: Auth;
 let db: Firestore;
@@ -377,6 +403,41 @@ async function seedNotifications(): Promise<void> {
   console.log(`ok  ${SEED_NOTIFICATIONS.length} sample alerts`);
 }
 
+async function seedRequests(uids: Record<string, string>): Promise<void> {
+  const customer = SEED_USERS.find((user) => user.role === 'customer');
+  if (!customer) return;
+
+  const customerId = await signInOrCreate(customer);
+  let count = 0;
+  for (const request of SEED_REQUESTS) {
+    count += 1;
+    const items = request.items.map((item, index) => ({
+      ...item,
+      dishId: `seed-dish-${count}-${index}`,
+    }));
+    const document: Order = {
+      customerId,
+      cookId: uids[request.cook],
+      riderId: null,
+      items,
+      total: items.reduce((sum, item) => sum + item.price * item.qty, 0),
+      schedule: { when: 'asap', time: '' },
+      address: request.address,
+      landmark: request.landmark,
+      paymentMethod: request.paymentMethod,
+      paymentStatus: 'pending',
+      status: 'ready',
+      declineReason: '',
+      riderLocation: null,
+      createdAt: Timestamp.fromMillis(Date.now() - (30 - count * 8) * 60 * 1000),
+      updatedAt: serverTimestamp() as unknown as Timestamp,
+    };
+    await setDoc(doc(db, 'orders', `seed-request-${count}`), document);
+  }
+  await signOut(auth);
+  console.log(`ok  ${SEED_REQUESTS.length} sample delivery requests`);
+}
+
 async function main(): Promise<void> {
   const missing = ['EXPO_PUBLIC_FIREBASE_API_KEY', 'EXPO_PUBLIC_FIREBASE_PROJECT_ID'].filter(
     (name) => !process.env[name],
@@ -403,6 +464,7 @@ async function main(): Promise<void> {
   }
   await seedReviews(uids);
   await seedNotifications();
+  await seedRequests(uids);
   console.log(
     '\nDone. The password for every test account is SEED_PASSWORD in mobile/scripts/seed.ts.',
   );

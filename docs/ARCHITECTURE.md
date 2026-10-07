@@ -89,6 +89,7 @@ Changing a field name affects teammates: tell the group first.
 | `reviews` | auto | `orderId`, `cookId`, `customerId`, `food`, `hygiene`, `delivery`, `comment`, `tags[]`, `createdAt` |
 | `favourites` | `{uid}_{cookId}` | `uid`, `cookId` |
 | `alertPrefs` | `{uid}_{cookId}` | `uid`, `cookId`, `enabled` |
+| `dismissedRequests` | `{riderUid}_{orderId}` | `uid`, `orderId` |
 | `notifications` | auto | `uid`, `text`, `read`, `createdAt` |
 | `payments` | auto | `cookId`, `orderId` (null for manual entry), `amount`, `method`, `status`, `createdAt` |
 
@@ -115,6 +116,8 @@ Changing a field name affects teammates: tell the group first.
 | Saved cooks, with a toggle | `useFavourites()` | `src/hooks/use-favourites.ts` |
 | Saved-cook alert switches | `useAlertPrefs()` | `src/hooks/use-alert-prefs.ts` |
 | The customer's alerts, unread count, mark read | `useNotifications()` | `src/hooks/use-notifications.ts` |
+| Delivery requests for a rider (open, dismiss, accept) | `useOpenRequests()` | `src/hooks/use-open-requests.ts` |
+| Rider fee and distance text | `riderFee(km)`, `formatDistance(km)` | `src/utils/delivery.ts` |
 | Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |

@@ -84,6 +84,13 @@ service cloud.firestore {
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
     }
 
+    match /dismissedRequests/{dismissalId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isRole('rider') && request.resource.data.uid == request.auth.uid;
+      // Checked by id, like alertPrefs, so deleting a missing document is not refused.
+      allow delete: if signedIn() && dismissalId.matches(request.auth.uid + '_.*');
+    }
+
     match /notifications/{noteId} {
       allow read, update, delete: if signedIn() && resource.data.uid == request.auth.uid;
       // Any signed-in user may notify another (e.g. cook notifies customer).

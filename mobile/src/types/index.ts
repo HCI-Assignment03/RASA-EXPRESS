@@ -148,6 +148,12 @@ export type AlertPreference = {
   enabled: boolean;
 };
 
+/** dismissedRequests/{riderUid}_{orderId}: a delivery request this rider hid on R1. */
+export type DismissedRequest = {
+  uid: string;
+  orderId: string;
+};
+
 export type AppNotification = {
   uid: string;
   text: string;
