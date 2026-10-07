@@ -3,11 +3,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
 import type { Language } from '@/types';
 
-const LANGUAGES: { code: Language; label: string }[] = [
-  { code: 'si', label: 'සිංහල' },
-  { code: 'ta', label: 'தமிழ்' },
-  { code: 'en', label: 'English' },
-];
+export const LANGUAGE_LABELS: Record<Language, string> = {
+  si: 'සිංහල',
+  ta: 'தமிழ்',
+  en: 'English',
+};
+
+const ORDER: Language[] = ['si', 'ta', 'en'];
 
 type Props = {
   value: Language;
@@ -21,7 +23,7 @@ type Props = {
 export function LanguageChips({ value, onChange }: Props) {
   return (
     <View style={styles.row}>
-      {LANGUAGES.map(({ code, label }) => {
+      {ORDER.map((code) => {
         const selected = code === value;
         return (
           <Pressable
@@ -31,7 +33,9 @@ export function LanguageChips({ value, onChange }: Props) {
             onPress={() => onChange(code)}
             style={[styles.chip, selected && styles.chipSelected]}
           >
-            <Text style={[styles.label, selected && styles.labelSelected]}>{label}</Text>
+            <Text style={[styles.label, selected && styles.labelSelected]}>
+              {LANGUAGE_LABELS[code]}
+            </Text>
           </Pressable>
         );
       })}

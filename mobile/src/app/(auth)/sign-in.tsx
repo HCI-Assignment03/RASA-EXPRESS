@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { Screen } from '@/components/screen';
@@ -88,125 +88,120 @@ export default function SignInScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <Screen scroll edges={['top', 'bottom']}>
-        <View style={styles.hero}>
-          <View style={styles.logo}>
-            <Ionicons name="restaurant" size={44} color={colors.onPrimary} />
-          </View>
-          <Text style={styles.brand}>RASA EXPRESS</Text>
-          <Text style={styles.tagline}>Home-cooked meals from trusted cooks near you</Text>
+    <Screen scroll edges={['top', 'bottom']}>
+      <View style={styles.hero}>
+        <View style={styles.logo}>
+          <Ionicons name="restaurant" size={44} color={colors.onPrimary} />
         </View>
+        <Text style={styles.brand}>RASA EXPRESS</Text>
+        <Text style={styles.tagline}>Home-cooked meals from trusted cooks near you</Text>
+      </View>
 
-        <View style={styles.modeSwitch} accessibilityRole="tablist">
-          <ModeTab label="Sign in" selected={!registering} onPress={() => switchMode('signIn')} />
-          <ModeTab
-            label="Create account"
-            selected={registering}
-            onPress={() => switchMode('register')}
-          />
-        </View>
+      <View style={styles.modeSwitch} accessibilityRole="tablist">
+        <ModeTab label="Sign in" selected={!registering} onPress={() => switchMode('signIn')} />
+        <ModeTab
+          label="Create account"
+          selected={registering}
+          onPress={() => switchMode('register')}
+        />
+      </View>
 
-        {registering ? <RoleTiles value={role} onChange={setRole} /> : null}
+      {registering ? <RoleTiles value={role} onChange={setRole} /> : null}
 
-        {registering ? (
-          <TextField
-            label="Your name"
-            value={name}
-            onChangeText={setName}
-            error={errors.name}
-            placeholder="e.g. Kawya Perera"
-            autoComplete="name"
-            textContentType="name"
-            returnKeyType="next"
-          />
-        ) : null}
-
+      {registering ? (
         <TextField
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          error={errors.email}
-          placeholder="you@example.com"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          autoComplete="email"
-          textContentType="emailAddress"
+          label="Your name"
+          value={name}
+          onChangeText={setName}
+          error={errors.name}
+          placeholder="e.g. Kawya Perera"
+          autoComplete="name"
+          textContentType="name"
           returnKeyType="next"
         />
+      ) : null}
 
-        {registering ? (
-          <TextField
-            label="Mobile number"
-            prefix="+94"
-            value={mobile}
-            onChangeText={setMobile}
-            error={errors.mobile}
-            placeholder="77 123 4567"
-            keyboardType="phone-pad"
-            autoComplete="tel"
-            textContentType="telephoneNumber"
-            returnKeyType="next"
-          />
-        ) : null}
+      <TextField
+        label="Email"
+        value={email}
+        onChangeText={setEmail}
+        error={errors.email}
+        placeholder="you@example.com"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+        autoComplete="email"
+        textContentType="emailAddress"
+        returnKeyType="next"
+      />
 
+      {registering ? (
         <TextField
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          error={errors.password}
-          placeholder={registering ? 'At least 6 characters' : 'Your password'}
-          secureTextEntry={!showPassword}
-          autoCapitalize="none"
-          autoCorrect={false}
-          autoComplete={registering ? 'new-password' : 'current-password'}
-          textContentType={registering ? 'newPassword' : 'password'}
-          returnKeyType="done"
-          onSubmitEditing={submit}
-          trailing={
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-              onPress={() => setShowPassword((shown) => !shown)}
-              hitSlop={8}
-              style={styles.eye}
-            >
-              <Ionicons
-                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                size={22}
-                color={colors.textMuted}
-              />
-            </Pressable>
-          }
+          label="Mobile number"
+          prefix="+94"
+          value={mobile}
+          onChangeText={setMobile}
+          error={errors.mobile}
+          placeholder="77 123 4567"
+          keyboardType="phone-pad"
+          autoComplete="tel"
+          textContentType="telephoneNumber"
+          returnKeyType="next"
         />
+      ) : null}
 
-        {formError ? (
-          <View style={styles.formError} accessibilityLiveRegion="polite">
-            <Ionicons name="alert-circle-outline" size={20} color={colors.danger} />
-            <Text style={styles.formErrorText}>{formError}</Text>
-          </View>
-        ) : null}
+      <TextField
+        label="Password"
+        value={password}
+        onChangeText={setPassword}
+        error={errors.password}
+        placeholder={registering ? 'At least 6 characters' : 'Your password'}
+        secureTextEntry={!showPassword}
+        autoCapitalize="none"
+        autoCorrect={false}
+        autoComplete={registering ? 'new-password' : 'current-password'}
+        textContentType={registering ? 'newPassword' : 'password'}
+        returnKeyType="done"
+        onSubmitEditing={submit}
+        trailing={
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+            onPress={() => setShowPassword((shown) => !shown)}
+            hitSlop={8}
+            style={styles.eye}
+          >
+            <Ionicons
+              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              size={22}
+              color={colors.textMuted}
+            />
+          </Pressable>
+        }
+      />
 
-        <Button
-          title={registering ? 'Create account' : 'Sign in'}
-          onPress={submit}
-          loading={submitting}
-        />
+      {formError ? (
+        <View style={styles.formError} accessibilityLiveRegion="polite">
+          <Ionicons name="alert-circle-outline" size={20} color={colors.danger} />
+          <Text style={styles.formErrorText}>{formError}</Text>
+        </View>
+      ) : null}
 
-        {registering ? (
-          <View style={styles.language}>
-            <Text style={styles.languageLabel}>Preferred language</Text>
-            <LanguageChips value={language} onChange={setLanguage} />
-          </View>
-        ) : null}
+      <Button
+        title={registering ? 'Create account' : 'Sign in'}
+        onPress={submit}
+        loading={submitting}
+      />
 
-        <Text style={styles.terms}>By continuing you agree to the Terms & Privacy Policy</Text>
-      </Screen>
-    </KeyboardAvoidingView>
+      {registering ? (
+        <View style={styles.language}>
+          <Text style={styles.languageLabel}>Preferred language</Text>
+          <LanguageChips value={language} onChange={setLanguage} />
+        </View>
+      ) : null}
+
+      <Text style={styles.terms}>By continuing you agree to the Terms & Privacy Policy</Text>
+    </Screen>
   );
 }
 
@@ -232,7 +227,6 @@ function ModeTab({
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
   hero: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.lg },
   logo: {
     width: 88,
