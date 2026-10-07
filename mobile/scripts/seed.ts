@@ -17,9 +17,16 @@ import {
   signOut,
   type Auth,
 } from 'firebase/auth';
-import { doc, getFirestore, serverTimestamp, setDoc, type Firestore } from 'firebase/firestore';
+import {
+  Timestamp,
+  doc,
+  getFirestore,
+  serverTimestamp,
+  setDoc,
+  type Firestore,
+} from 'firebase/firestore';
 
-import type { Cook, Dish, Role } from '../src/types';
+import type { Cook, Dish, Review, Role } from '../src/types';
 
 // Test accounts for the shared development project only. Not real people.
 const SEED_PASSWORD = 'Rasa@2026';
@@ -197,6 +204,51 @@ const SEED_USERS: SeedUser[] = [
   },
 ];
 
+type SeedReview = Pick<Review, 'food' | 'hygiene' | 'delivery' | 'comment' | 'tags'> & {
+  cook: string;
+  daysAgo: number;
+};
+
+// A few reviews so the C3 Reviews tab has something to show. Written by the customer test account.
+const SEED_REVIEWS: SeedReview[] = [
+  {
+    cook: 'bhanuka',
+    daysAgo: 2,
+    food: 5,
+    hygiene: 5,
+    delivery: 4,
+    comment: 'Tasted like home. Packed neatly and still warm.',
+    tags: ['Fresh & tasty', 'Clean packaging'],
+  },
+  {
+    cook: 'bhanuka',
+    daysAgo: 6,
+    food: 5,
+    hygiene: 5,
+    delivery: 5,
+    comment: 'The ambul thiyal was perfect. Will order again.',
+    tags: ['Fresh & tasty', 'Good portion'],
+  },
+  {
+    cook: 'bhanuka',
+    daysAgo: 12,
+    food: 4,
+    hygiene: 5,
+    delivery: 3,
+    comment: 'Great food, the rider came a little late.',
+    tags: ['Late delivery'],
+  },
+  {
+    cook: 'nimali',
+    daysAgo: 4,
+    food: 5,
+    hygiene: 4,
+    delivery: 5,
+    comment: 'Soft hoppers, the egg was cooked just right.',
+    tags: ['Fresh & tasty', 'Hot on arrival'],
+  },
+];
+
 // Set in main() once the .env values have been checked.
 let auth: Auth;
 let db: Firestore;
@@ -236,7 +288,7 @@ async function signInOrCreate(user: SeedUser): Promise<string> {
   }
 }
 
-async function seedUser(user: SeedUser): Promise<void> {
+async function seedUser(user: SeedUser): Promise<string> {
   const uid = await signInOrCreate(user);
 
   await setDoc(
@@ -263,6 +315,30 @@ async function seedUser(user: SeedUser): Promise<void> {
 
   await signOut(auth);
   console.log(`ok  ${user.role.padEnd(8)} ${user.email}`);
+  return uid;
+}
+
+/** Signs in as the customer test account and writes the sample reviews for the cooks. */
+async function seedReviews(uids: Record<string, string>): Promise<void> {
+  const customer = SEED_USERS.find((user) => user.role === 'customer');
+  if (!customer) return;
+
+  const customerId = await signInOrCreate(customer);
+  let count = 0;
+  for (const review of SEED_REVIEWS) {
+    count += 1;
+    const { cook, daysAgo, ...scores } = review;
+    const document: Review = {
+      ...scores,
+      orderId: `seed-order-${count}`,
+      cookId: uids[cook],
+      customerId,
+      createdAt: Timestamp.fromMillis(Date.now() - daysAgo * 24 * 60 * 60 * 1000),
+    };
+    await setDoc(doc(db, 'reviews', `seed-${cook}-${count}`), document);
+  }
+  await signOut(auth);
+  console.log(`ok  ${SEED_REVIEWS.length} sample reviews`);
 }
 
 async function main(): Promise<void> {
@@ -285,9 +361,11 @@ async function main(): Promise<void> {
   db = getFirestore(app);
 
   console.log(`Seeding project ${process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID} ...`);
+  const uids: Record<string, string> = {};
   for (const user of SEED_USERS) {
-    await seedUser(user);
+    uids[user.key] = await seedUser(user);
   }
+  await seedReviews(uids);
   console.log(
     '\nDone. The password for every test account is SEED_PASSWORD in mobile/scripts/seed.ts.',
   );

@@ -1,4 +1,14 @@
-import { deleteDoc, doc, getDoc, serverTimestamp, updateDoc, writeBatch } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+  writeBatch,
+} from 'firebase/firestore';
 
 import type { Cook, Language, Role, UserProfile, WithId } from '@/types';
 
@@ -67,10 +77,26 @@ export async function updateUserProfile(uid: string, patch: ProfilePatch): Promi
   await updateDoc(userRef(uid), patch);
 }
 
-/** Delete: removes users/{uid} and, for cooks, cooks/{uid}. */
+/**
+ * Delete: removes users/{uid} and the data that only that user owns, in one batch.
+ * A cook loses the cook page and the dishes; a customer loses the cart and the favourites.
+ * Orders and reviews stay, because the cook and rider still need them.
+ */
 export async function deleteUserProfile(uid: string, role: Role): Promise<void> {
-  await deleteDoc(userRef(uid));
+  const batch = writeBatch(db);
+  batch.delete(userRef(uid));
+
   if (role === 'cook') {
-    await deleteDoc(cookRef(uid));
+    batch.delete(cookRef(uid));
+    const dishes = await getDocs(query(collection(db, 'dishes'), where('cookId', '==', uid)));
+    dishes.forEach((dish) => batch.delete(dish.ref));
   }
+
+  if (role === 'customer') {
+    batch.delete(doc(db, 'carts', uid));
+    const favourites = await getDocs(query(collection(db, 'favourites'), where('uid', '==', uid)));
+    favourites.forEach((favourite) => batch.delete(favourite.ref));
+  }
+
+  await batch.commit();
 }
