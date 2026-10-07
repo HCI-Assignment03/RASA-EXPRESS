@@ -1,11 +1,11 @@
 import {
   collection,
-  deleteDoc,
   doc,
   onSnapshot,
   query,
   setDoc,
   where,
+  writeBatch,
   type Unsubscribe,
 } from 'firebase/firestore';
 
@@ -35,7 +35,10 @@ export async function addFavourite(uid: string, cookId: string): Promise<void> {
   await setDoc(favouriteRef(uid, cookId), favourite);
 }
 
-/** Delete: remove a saved cook. */
+/** Delete: remove a saved cook, together with its alert preference, in one batch. */
 export async function removeFavourite(uid: string, cookId: string): Promise<void> {
-  await deleteDoc(favouriteRef(uid, cookId));
+  const batch = writeBatch(db);
+  batch.delete(favouriteRef(uid, cookId));
+  batch.delete(doc(db, 'alertPrefs', `${uid}_${cookId}`));
+  await batch.commit();
 }

@@ -1,8 +1,11 @@
 import { Tabs } from 'expo-router';
 
 import { tabIcon, tabScreenOptions } from '@/components/tab-options';
+import { useNotifications } from '@/hooks/use-notifications';
 
 export default function CustomerTabsLayout() {
+  const { unreadCount } = useNotifications();
+
   return (
     <Tabs screenOptions={tabScreenOptions}>
       <Tabs.Screen
@@ -11,7 +14,11 @@ export default function CustomerTabsLayout() {
       />
       <Tabs.Screen
         name="favourites"
-        options={{ title: 'Favourites', tabBarIcon: tabIcon('heart', 'heart-outline') }}
+        options={{
+          title: 'Favourites',
+          tabBarIcon: tabIcon('heart', 'heart-outline'),
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
+        }}
       />
       <Tabs.Screen
         name="orders"

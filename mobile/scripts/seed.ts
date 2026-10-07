@@ -26,7 +26,7 @@ import {
   type Firestore,
 } from 'firebase/firestore';
 
-import type { Cook, Dish, Review, Role } from '../src/types';
+import type { AppNotification, Cook, Dish, Review, Role } from '../src/types';
 
 // Test accounts for the shared development project only. Not real people.
 const SEED_PASSWORD = 'Rasa@2026';
@@ -249,6 +249,22 @@ const SEED_REVIEWS: SeedReview[] = [
   },
 ];
 
+// A few alerts so the C8 Alerts section has something to show. daysAgo can be a fraction.
+const SEED_NOTIFICATIONS: { text: string; daysAgo: number; read: boolean }[] = [
+  {
+    text: "Bhanuka's Kitchen added Fish Ambul Thiyal Meal to the menu.",
+    daysAgo: 0.05,
+    read: false,
+  },
+  {
+    text: "Nimali's Hoppers is taking orders for tomorrow's breakfast.",
+    daysAgo: 0.4,
+    read: false,
+  },
+  { text: 'Your order was delivered. How was the food?', daysAgo: 1.5, read: true },
+  { text: "Sunethra's Short Eats has new short eats today.", daysAgo: 3, read: true },
+];
+
 // Set in main() once the .env values have been checked.
 let auth: Auth;
 let db: Firestore;
@@ -341,6 +357,26 @@ async function seedReviews(uids: Record<string, string>): Promise<void> {
   console.log(`ok  ${SEED_REVIEWS.length} sample reviews`);
 }
 
+async function seedNotifications(): Promise<void> {
+  const customer = SEED_USERS.find((user) => user.role === 'customer');
+  if (!customer) return;
+
+  const customerId = await signInOrCreate(customer);
+  let count = 0;
+  for (const note of SEED_NOTIFICATIONS) {
+    count += 1;
+    const document: AppNotification = {
+      uid: customerId,
+      text: note.text,
+      read: note.read,
+      createdAt: Timestamp.fromMillis(Date.now() - note.daysAgo * 24 * 60 * 60 * 1000),
+    };
+    await setDoc(doc(db, 'notifications', `seed-note-${count}`), document);
+  }
+  await signOut(auth);
+  console.log(`ok  ${SEED_NOTIFICATIONS.length} sample alerts`);
+}
+
 async function main(): Promise<void> {
   const missing = ['EXPO_PUBLIC_FIREBASE_API_KEY', 'EXPO_PUBLIC_FIREBASE_PROJECT_ID'].filter(
     (name) => !process.env[name],
@@ -366,6 +402,7 @@ async function main(): Promise<void> {
     uids[user.key] = await seedUser(user);
   }
   await seedReviews(uids);
+  await seedNotifications();
   console.log(
     '\nDone. The password for every test account is SEED_PASSWORD in mobile/scripts/seed.ts.',
   );

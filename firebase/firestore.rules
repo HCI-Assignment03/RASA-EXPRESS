@@ -76,6 +76,14 @@ service cloud.firestore {
       allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
     }
 
+    match /alertPrefs/{prefId} {
+      allow read, update: if signedIn() && resource.data.uid == request.auth.uid;
+      // Checked by id because removing a saved cook also deletes its alert preference, which
+      // may not exist. A missing document has no resource.data to check.
+      allow delete: if signedIn() && prefId.matches(request.auth.uid + '_.*');
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+    }
+
     match /notifications/{noteId} {
       allow read, update, delete: if signedIn() && resource.data.uid == request.auth.uid;
       // Any signed-in user may notify another (e.g. cook notifies customer).

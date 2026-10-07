@@ -88,6 +88,7 @@ Changing a field name affects teammates: tell the group first.
 | `orders/{id}/messages` | auto | `senderId`, `text`, `createdAt` |
 | `reviews` | auto | `orderId`, `cookId`, `customerId`, `food`, `hygiene`, `delivery`, `comment`, `tags[]`, `createdAt` |
 | `favourites` | `{uid}_{cookId}` | `uid`, `cookId` |
+| `alertPrefs` | `{uid}_{cookId}` | `uid`, `cookId`, `enabled` |
 | `notifications` | auto | `uid`, `text`, `read`, `createdAt` |
 | `payments` | auto | `cookId`, `orderId` (null for manual entry), `amount`, `method`, `status`, `createdAt` |
 
@@ -112,6 +113,9 @@ Changing a field name affects teammates: tell the group first.
 | All cooks, or one cook, live | `useCooks()`, `useCook(id)` | `src/hooks/use-cooks.ts` |
 | Dishes of one cook (or all with `null`), live | `useDishes(cookId)` | `src/hooks/use-dishes.ts` |
 | Saved cooks, with a toggle | `useFavourites()` | `src/hooks/use-favourites.ts` |
+| Saved-cook alert switches | `useAlertPrefs()` | `src/hooks/use-alert-prefs.ts` |
+| The customer's alerts, unread count, mark read | `useNotifications()` | `src/hooks/use-notifications.ts` |
+| Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
 | Money, dates, mobile numbers | `formatPrice`, `formatDate`, `formatMobile` | `src/utils/format.ts` |

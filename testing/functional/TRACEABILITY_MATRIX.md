@@ -9,7 +9,7 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | FR03 | Place food orders | C5 | `customer/checkout.tsx` | Fernando | |
 | FR04 | Real-time order and delivery tracking | C6, R2 | `customer/track/[orderId].tsx`, `rider/(tabs)/trip.tsx` | Fernando, Lowe | |
 | FR05 | Multiple payment methods incl. COD | C5, S2, S4 | `customer/checkout.tsx`, `cook/order/[id].tsx`, `cook/(tabs)/sales.tsx` | Fernando, Manawadu | |
-| FR06 | Rate and review sellers, favourites | C2, C3, C7, C8 | `customer/review/[orderId].tsx`, `customer/(tabs)/favourites.tsx` | Fernando, Lowe | |
+| FR06 | Rate and review sellers, favourites | C2, C3, C7, C8 | `customer/review/[orderId].tsx`, `customer/(tabs)/favourites.tsx` | Fernando, Lowe | TC-C8-01, 02, 09 to 12 |
 | FR07 | Seller order dashboard | S1, S2 | `cook/(tabs)/orders.tsx`, `cook/order/[id].tsx` | Manawadu | |
 | FR08 | Seller updates menu availability and order status | S1, S2, S3 | `cook/(tabs)/menu.tsx` | Manawadu | |
 | FR09 | Rider GPS navigation and delivery status | R1, R2 | `rider/(tabs)/requests.tsx`, `rider/(tabs)/trip.tsx` | Lowe | |
@@ -21,6 +21,6 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | NFR05 | Android and iOS | All | All | All | |
 | NFR06 | High availability | Back end | Firebase | Kulathunga | |
 | NFR07 | Easy to learn | C1, S1-S3 | | Kulathunga, Manawadu | (SUS) |
-| NFR08 | Real-time notifications | C6, C8 | | Fernando, Lowe | |
+| NFR08 | Real-time notifications | C6, C8 | `customer/track/[orderId].tsx`, `customer/(tabs)/favourites.tsx` | Fernando, Lowe | TC-C8-03 to 08 |
 
 Paths are relative to `mobile/src/app/`. Update the "Implemented in" column if you use different file names.

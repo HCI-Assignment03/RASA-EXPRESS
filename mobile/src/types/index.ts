@@ -141,6 +141,13 @@ export type Favourite = {
   cookId: string;
 };
 
+/** alertPrefs/{uid}_{cookId}: whether a customer wants alerts about a saved cook (C8). */
+export type AlertPreference = {
+  uid: string;
+  cookId: string;
+  enabled: boolean;
+};
+
 export type AppNotification = {
   uid: string;
   text: string;
