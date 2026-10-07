@@ -5,6 +5,7 @@ export const colors = {
   primary: '#F26B1D',
   primaryDark: '#D95A10',
   primarySoft: '#FDE7D8',
+  coverPeach: '#FBE3CC',
   background: '#FFF8F1',
   surface: '#FFFFFF',
   surfaceMuted: '#F6EDE4',
