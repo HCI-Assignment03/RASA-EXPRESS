@@ -12,7 +12,7 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | FR06 | Rate and review sellers, favourites | C2, C3, C7, C8 | `customer/review/[orderId].tsx`, `customer/(tabs)/favourites.tsx` | Fernando, Lowe | TC-C8-01, 02, 09 to 12 |
 | FR07 | Seller order dashboard | S1, S2 | `cook/(tabs)/orders.tsx`, `cook/order/[id].tsx` | Manawadu | |
 | FR08 | Seller updates menu availability and order status | S1, S2, S3 | `cook/(tabs)/menu.tsx` | Manawadu | |
-| FR09 | Rider GPS navigation and delivery status | R1, R2 | `rider/(tabs)/requests.tsx`, `rider/(tabs)/trip.tsx` | Lowe | |
+| FR09 | Rider GPS navigation and delivery status | R1, R2 | `rider/(tabs)/requests.tsx`, `rider/(tabs)/trip.tsx` | Lowe | TC-R1-01 to TC-R1-10 |
 | FR10 | Daily sales reports | S4 | `cook/(tabs)/sales.tsx` | Manawadu | |
 | NFR01 | Simple, user-friendly interface | All | All | All | (SUS) |
 | NFR02 | Secure authentication | C1 | `(auth)/sign-in.tsx` | Kulathunga | |

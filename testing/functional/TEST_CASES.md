@@ -28,3 +28,13 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-C8-10 | C8 | FR06 | Delete | A saved cook with alerts on | Tap the trash button and choose Remove | Cook and its alert preference are removed. Saving the cook again shows the switch off | | | | |
 | TC-C8-11 | C8 | FR06 | Delete (cancel) | A saved cook | Tap the trash button and choose Keep | Nothing is removed | | | | |
 | TC-C8-12 | C8 | FR06 | Read | A saved cook | Tap the cook's name | The cook's profile (C3) opens | | | | |
+| TC-R1-01 | R1 | FR09 | Read | Signed in as rider, 3 seeded ready orders with no rider | Open the Requests tab | "3 requests waiting", each card shows item count, payment badge, cook pickup, address, landmark, distance and fee | | | | |
+| TC-R1-02 | R1 | FR09 | Read | Cash order in the list | Look at the payment badge | Badge reads "Collect Rs. <total> cash". A card order reads "Paid online" | | | | |
+| TC-R1-03 | R1 | FR09 | Read | No ready orders without a rider | Open the Requests tab | Message "No delivery requests right now" | | | | |
+| TC-R1-04 | R1 | FR09 | Update | At least one open request | Tap Accept on a request | Toast "Request accepted", Active trip tab opens, the request is gone from the list | | | | |
+| TC-R1-05 | R1 | FR09 | Update | TC-R1-04 done | Sign in as the customer and open Favourites, Alerts | A new alert says the rider accepted the delivery | | | | |
+| TC-R1-06 | R1 | FR09 | Delete | At least one open request | Tap Dismiss on a request | Request disappears, toast "Request hidden", count drops by 1 | | | | |
+| TC-R1-07 | R1 | FR09 | Delete | One request dismissed | Tap Show hidden requests | The request is back and the link disappears | | | | |
+| TC-R1-08 | R1 | FR09 | Read | A request is dismissed by rider A | Sign in as another rider | The request is still visible to the other rider | | | | |
+| TC-R1-09 | R1 | FR09 | Update (invalid) | Two riders have the same request open | Rider A accepts, then rider B taps Accept | Rider B sees "Another rider already took this request" and is not assigned | | | | |
+| TC-R1-10 | R1 | FR09 | Read | No network | Open the Requests tab | Error message with a Try again button | | | | |
