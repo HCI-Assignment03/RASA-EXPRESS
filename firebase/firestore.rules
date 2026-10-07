@@ -97,9 +97,19 @@ service cloud.firestore {
       allow create: if signedIn();
     }
 
+    // The rider who delivers an order may record the cash for it (R2).
+    function riderCollectsCash(payment) {
+      return isRole('rider') && payment.method == 'cash' && payment.orderId != null &&
+        get(/databases/$(database)/documents/orders/$(payment.orderId)).data.riderId == request.auth.uid &&
+        get(/databases/$(database)/documents/orders/$(payment.orderId)).data.cookId == payment.cookId;
+    }
+
     match /payments/{paymentId} {
-      allow read, update, delete: if signedIn() && resource.data.cookId == request.auth.uid;
-      allow create: if isRole('cook') && request.resource.data.cookId == request.auth.uid;
+      allow read, delete: if signedIn() && resource.data.cookId == request.auth.uid;
+      allow create: if (isRole('cook') && request.resource.data.cookId == request.auth.uid) ||
+        riderCollectsCash(request.resource.data);
+      allow update: if (signedIn() && resource.data.cookId == request.auth.uid) ||
+        riderCollectsCash(request.resource.data);
     }
   }
 }

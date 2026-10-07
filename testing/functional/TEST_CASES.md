@@ -38,3 +38,16 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-R1-08 | R1 | FR09 | Read | A request is dismissed by rider A | Sign in as another rider | The request is still visible to the other rider | | | | |
 | TC-R1-09 | R1 | FR09 | Update (invalid) | Two riders have the same request open | Rider A accepts, then rider B taps Accept | Rider B sees "Another rider already took this request" and is not assigned | | | | |
 | TC-R1-10 | R1 | FR09 | Read | No network | Open the Requests tab | Error message with a Try again button | | | | |
+| TC-R2-01 | R2 | FR09 | Read | Rider has no accepted trip | Open the Active trip tab | Message "No active trip" and a See requests button | | | | |
+| TC-R2-02 | R2 | FR04, FR09 | Read | Rider accepted a request (R1) | Open the Active trip tab | Map shows pickup P, drop-off D, a dashed line and the blue rider dot. Cards show cook, address, landmark, items, notes and fee | | | | |
+| TC-R2-03 | R2 | FR09 | Read | Trip is open | Tap Navigate | The phone's maps app opens with directions to the cook, and after pick up, to the customer | | | | |
+| TC-R2-04 | R2 | FR04 | Update | Location permission allowed | Walk or wait on an open trip, then check the order in Firebase | `riderLocation` on the order holds the phone's latitude and longitude and changes as the rider moves | | | | |
+| TC-R2-05 | R2 | FR04 | Update (invalid) | Location permission denied | Open an active trip | Warning "Location is off", the trip still works, no rider dot on the map | | | | |
+| TC-R2-06 | R2 | FR09 | Update | Trip is at "Go to the cook" | Tap Mark as picked up | Toast, status badge changes to Collect the cash (cash order) or Deliver the food (online order), customer gets a picked-up alert | | | | |
+| TC-R2-07 | R2 | FR09 | Create | Cash order, picked up | Tap Cash collected | Toast "Cash recorded", badge turns green, a payment `cash_<orderId>` exists with the order total, button changes to Mark as delivered | | | | |
+| TC-R2-08 | R2 | FR09 | Create (invalid) | Cash order, cash not yet recorded | Look for the Mark as delivered button | It is not available until the cash is recorded | | | | |
+| TC-R2-09 | R2 | FR09 | Create | Cash order, cash already recorded | Tap Cash collected twice quickly, or reopen the trip | Only one payment exists for the order | | | | |
+| TC-R2-10 | R2 | FR09 | Update | Trip at the deliver step | Tap Mark as delivered, choose Not yet, then tap again and choose Delivered | Not yet changes nothing. Delivered shows the earned amount, the trip disappears, customer gets a delivered alert | | | | |
+| TC-R2-11 | R2 | FR09 | Update | Order paid online | Mark as picked up, then look at the buttons | Goes straight to Mark as delivered with no cash step | | | | |
+| TC-R2-12 | R2 | FR04 | Read | No internet | Open an active trip | Map area explains it could not load. Address, landmark and Navigate still work | | | | |
+| TC-R2-13 | R2 | FR09 | Read | Rider accepted two requests | Open Active trip | The older trip is shown, with "1 more trip is waiting". After delivering it, the next one appears | | | | |

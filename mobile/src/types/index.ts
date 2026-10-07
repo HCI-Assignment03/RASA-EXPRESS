@@ -111,6 +111,10 @@ export type Order = {
   status: OrderStatus;
   declineReason: string;
   riderLocation: LatLng | null;
+  /** Where the cook hands over the food. Optional: R2 falls back to a fixed point in Galle Fort. */
+  pickup?: LatLng;
+  /** Where the customer is. Optional, same fallback. */
+  dropoff?: LatLng;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
