@@ -5,7 +5,7 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | Req | Description | Prototype interface | Implemented in (file) | Owner | Test case IDs |
 |-----|-------------|--------------------|-----------------------|-------|---------------|
 | FR01 | Browse verified home food sellers | C2, C3 | `customer/(tabs)/home.tsx`, `customer/cook/[id].tsx` | Kulathunga | |
-| FR02 | Menus with photos, prices, ingredients, nutrition | C3, C4 | `customer/cook/[id].tsx`, `customer/dish/[id].tsx` | Kulathunga, Lowe | |
+| FR02 | Menus with photos, prices, ingredients, nutrition | C3, C4 | `customer/cook/[id].tsx`, `customer/dish/[id].tsx` | Kulathunga, Lowe | TC-C4-01 to TC-C4-08 |
 | FR03 | Place food orders | C5 | `customer/checkout.tsx` | Fernando | |
 | FR04 | Real-time order and delivery tracking | C6, R2 | `customer/track/[orderId].tsx`, `rider/(tabs)/trip.tsx` | Fernando, Lowe | |
 | FR05 | Multiple payment methods incl. COD | C5, S2, S4 | `customer/checkout.tsx`, `cook/order/[id].tsx`, `cook/(tabs)/sales.tsx` | Fernando, Manawadu | |

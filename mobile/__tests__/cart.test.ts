@@ -52,6 +52,12 @@ describe('addDish', () => {
     expect(cart.items[0].note).toBe('Less spicy');
   });
 
+  it('replaces the note when a new one is given, and an empty note clears it', () => {
+    const withNote = addDish(null, rice, 1, 'Less spicy');
+    expect(addDish(withNote, rice, 0, 'No onions').items[0].note).toBe('No onions');
+    expect(addDish(withNote, rice, 0, '').items[0].note).toBe('');
+  });
+
   it('starts a new cart when the dish is from another cook', () => {
     const cart = addDish(addDish(null, rice), hopper);
     expect(cart.cookId).toBe('nimali');
