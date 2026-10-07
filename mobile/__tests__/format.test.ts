@@ -1,4 +1,4 @@
-import { formatMobile, formatPrice } from '../src/utils/format';
+import { formatDate, formatMobile, formatPrice } from '../src/utils/format';
 
 describe('formatMobile', () => {
   it('groups a stored mobile number', () => {
@@ -15,5 +15,12 @@ describe('formatPrice', () => {
   it('writes rupees with thousands separators', () => {
     expect(formatPrice(650)).toBe('Rs. 650');
     expect(formatPrice(1550)).toBe('Rs. 1,550');
+  });
+});
+
+describe('formatDate', () => {
+  it('writes day, short month and year', () => {
+    expect(formatDate(new Date(2026, 9, 7))).toBe('7 Oct 2026');
+    expect(formatDate(new Date(2026, 0, 31))).toBe('31 Jan 2026');
   });
 });

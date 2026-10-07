@@ -101,3 +101,22 @@ Changing a field name affects teammates: tell the group first.
 - **Maps in the APK** need a Google Maps key (see `docs/LEAD_SETUP.md`). Fallback: a drawn route.
 - **Security rules** in `firebase/firestore.rules` let users pick their own role at sign-up. That is acceptable for coursework; state it as a limitation in the report.
 - **One shared Firebase project:** everyone writes to the same data. Use clearly named test data and do not delete other people's documents.
+
+## 5. Shared hooks and helpers (use these, do not rebuild them)
+
+| You need | Use | Where |
+|----------|-----|-------|
+| Who is signed in, their role, sign out | `useAuth()` | `src/context/AuthContext.tsx` |
+| The cart: items, count, total, add, set quantity, set note, clear | `useCart()` | `src/hooks/use-cart.ts` |
+| Pure cart rules (cap at portions left, one cook per cart) | `addDish`, `setQuantity`, `setNote`, `cartTotal` | `src/utils/cart.ts` |
+| All cooks, or one cook, live | `useCooks()`, `useCook(id)` | `src/hooks/use-cooks.ts` |
+| Dishes of one cook (or all with `null`), live | `useDishes(cookId)` | `src/hooks/use-dishes.ts` |
+| Saved cooks, with a toggle | `useFavourites()` | `src/hooks/use-favourites.ts` |
+| A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
+| Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
+| Money, dates, mobile numbers | `formatPrice`, `formatDate`, `formatMobile` | `src/utils/format.ts` |
+| Toast messages | `useToast().show(text, 'success' \| 'error' \| 'info')` | `src/components/toast.tsx` |
+| Quantity - 2 + control | `QuantityStepper` | `src/components/quantity-stepper.tsx` |
+| Drawn plate instead of a photo | `FoodPlate` | `src/components/food-plate.tsx` |
+
+Rules for the cart: `carts/{uid}` holds one cook's dishes. `useCart().add()` replaces the cart when the dish is from a different cook, so ask the customer first (C3 shows how). Placing an order (C5) should copy the items into the order and then call `clear()`.

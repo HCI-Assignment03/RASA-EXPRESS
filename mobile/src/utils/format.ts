@@ -8,3 +8,10 @@ export function formatMobile(stored: string): string {
 export function formatPrice(amount: number): string {
   return `Rs. ${amount.toLocaleString('en-US')}`;
 }
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** A date as "7 Oct 2026". Written out by hand because Intl locales vary between devices. */
+export function formatDate(date: Date): string {
+  return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+}
