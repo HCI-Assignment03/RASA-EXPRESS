@@ -26,7 +26,7 @@ import {
   type Firestore,
 } from 'firebase/firestore';
 
-import type { Cook, Dish, Review, Role } from '../src/types';
+import type { AppNotification, Cook, Dish, Order, Review, Role } from '../src/types';
 
 // Test accounts for the shared development project only. Not real people.
 const SEED_PASSWORD = 'Rasa@2026';
@@ -249,6 +249,54 @@ const SEED_REVIEWS: SeedReview[] = [
   },
 ];
 
+// A few alerts so the C8 Alerts section has something to show. daysAgo can be a fraction.
+const SEED_NOTIFICATIONS: { text: string; daysAgo: number; read: boolean }[] = [
+  {
+    text: "Bhanuka's Kitchen added Fish Ambul Thiyal Meal to the menu.",
+    daysAgo: 0.05,
+    read: false,
+  },
+  {
+    text: "Nimali's Hoppers is taking orders for tomorrow's breakfast.",
+    daysAgo: 0.4,
+    read: false,
+  },
+  { text: 'Your order was delivered. How was the food?', daysAgo: 1.5, read: true },
+  { text: "Sunethra's Short Eats has new short eats today.", daysAgo: 3, read: true },
+];
+
+// Orders the cook has marked ready and no rider has taken yet, so R1 has requests to show.
+// Running the seed again puts them back to "no rider", which is handy for testing.
+const SEED_REQUESTS = [
+  {
+    cook: 'bhanuka',
+    address: '12 Lighthouse Street, Galle Fort',
+    landmark: 'Opposite the Dutch Hospital',
+    pickup: { lat: 6.0312, lng: 80.2128 },
+    dropoff: { lat: 6.0262, lng: 80.2172 },
+    paymentMethod: 'cash' as const,
+    items: [{ name: 'Chicken Rice & Curry', price: 650, qty: 2, note: 'Less spicy' }],
+  },
+  {
+    cook: 'nimali',
+    address: '45 Pedlar Street, Galle Fort',
+    landmark: 'Next to the Fort Bazaar',
+    pickup: { lat: 6.0285, lng: 80.2205 },
+    dropoff: { lat: 6.0271, lng: 80.2159 },
+    paymentMethod: 'cash' as const,
+    items: [{ name: 'Egg Hoppers (3)', price: 450, qty: 3, note: '' }],
+  },
+  {
+    cook: 'sunethra',
+    address: '8 Church Street, Galle Fort',
+    landmark: 'Beside the Groote Kerk',
+    pickup: { lat: 6.0241, lng: 80.2193 },
+    dropoff: { lat: 6.0289, lng: 80.2146 },
+    paymentMethod: 'card' as const,
+    items: [{ name: 'Short Eats Box', price: 600, qty: 1, note: 'No onions' }],
+  },
+];
+
 // Set in main() once the .env values have been checked.
 let auth: Auth;
 let db: Firestore;
@@ -341,6 +389,63 @@ async function seedReviews(uids: Record<string, string>): Promise<void> {
   console.log(`ok  ${SEED_REVIEWS.length} sample reviews`);
 }
 
+async function seedNotifications(): Promise<void> {
+  const customer = SEED_USERS.find((user) => user.role === 'customer');
+  if (!customer) return;
+
+  const customerId = await signInOrCreate(customer);
+  let count = 0;
+  for (const note of SEED_NOTIFICATIONS) {
+    count += 1;
+    const document: AppNotification = {
+      uid: customerId,
+      text: note.text,
+      read: note.read,
+      createdAt: Timestamp.fromMillis(Date.now() - note.daysAgo * 24 * 60 * 60 * 1000),
+    };
+    await setDoc(doc(db, 'notifications', `seed-note-${count}`), document);
+  }
+  await signOut(auth);
+  console.log(`ok  ${SEED_NOTIFICATIONS.length} sample alerts`);
+}
+
+async function seedRequests(uids: Record<string, string>): Promise<void> {
+  const customer = SEED_USERS.find((user) => user.role === 'customer');
+  if (!customer) return;
+
+  const customerId = await signInOrCreate(customer);
+  let count = 0;
+  for (const request of SEED_REQUESTS) {
+    count += 1;
+    const items = request.items.map((item, index) => ({
+      ...item,
+      dishId: `seed-dish-${count}-${index}`,
+    }));
+    const document: Order = {
+      customerId,
+      cookId: uids[request.cook],
+      riderId: null,
+      items,
+      total: items.reduce((sum, item) => sum + item.price * item.qty, 0),
+      schedule: { when: 'asap', time: '' },
+      address: request.address,
+      landmark: request.landmark,
+      paymentMethod: request.paymentMethod,
+      paymentStatus: 'pending',
+      status: 'ready',
+      declineReason: '',
+      riderLocation: null,
+      pickup: request.pickup,
+      dropoff: request.dropoff,
+      createdAt: Timestamp.fromMillis(Date.now() - (30 - count * 8) * 60 * 1000),
+      updatedAt: serverTimestamp() as unknown as Timestamp,
+    };
+    await setDoc(doc(db, 'orders', `seed-request-${count}`), document);
+  }
+  await signOut(auth);
+  console.log(`ok  ${SEED_REQUESTS.length} sample delivery requests`);
+}
+
 async function main(): Promise<void> {
   const missing = ['EXPO_PUBLIC_FIREBASE_API_KEY', 'EXPO_PUBLIC_FIREBASE_PROJECT_ID'].filter(
     (name) => !process.env[name],
@@ -366,6 +471,8 @@ async function main(): Promise<void> {
     uids[user.key] = await seedUser(user);
   }
   await seedReviews(uids);
+  await seedNotifications();
+  await seedRequests(uids);
   console.log(
     '\nDone. The password for every test account is SEED_PASSWORD in mobile/scripts/seed.ts.',
   );

@@ -84,10 +84,12 @@ Changing a field name affects teammates: tell the group first.
 | `cooks` | cook's uid | `displayName`, `bio`, `area`, `verified`, `rating`, `reviewCount`, `hygieneScore`, `acceptsPreorder`, `cutoffTime`, `tags[]`, `etaMin`, `etaMax`, `distanceKm` |
 | `dishes` | auto | `cookId`, `name`, `price`, `ingredients[]`, `allergens[]`, `nutrition{kcal,protein,carbs,fat}`, `available`, `portionsLeft`, `photoUrl` |
 | `carts` | customer uid | `cookId`, `items[{dishId,name,price,qty,note}]` |
-| `orders` | auto | `customerId`, `cookId`, `riderId` (null until accepted), `items[]`, `total`, `schedule`, `address`, `landmark`, `paymentMethod`, `paymentStatus`, `status`, `declineReason`, `riderLocation{lat,lng}`, `createdAt`, `updatedAt` |
+| `orders` | auto | `customerId`, `cookId`, `riderId` (null until accepted), `items[]`, `total`, `schedule`, `address`, `landmark`, `paymentMethod`, `paymentStatus`, `status`, `declineReason`, `riderLocation{lat,lng}`, `pickup{lat,lng}` (optional), `dropoff{lat,lng}` (optional), `createdAt`, `updatedAt` |
 | `orders/{id}/messages` | auto | `senderId`, `text`, `createdAt` |
 | `reviews` | auto | `orderId`, `cookId`, `customerId`, `food`, `hygiene`, `delivery`, `comment`, `tags[]`, `createdAt` |
 | `favourites` | `{uid}_{cookId}` | `uid`, `cookId` |
+| `alertPrefs` | `{uid}_{cookId}` | `uid`, `cookId`, `enabled` |
+| `dismissedRequests` | `{riderUid}_{orderId}` | `uid`, `orderId` |
 | `notifications` | auto | `uid`, `text`, `read`, `createdAt` |
 | `payments` | auto | `cookId`, `orderId` (null for manual entry), `amount`, `method`, `status`, `createdAt` |
 
@@ -112,6 +114,13 @@ Changing a field name affects teammates: tell the group first.
 | All cooks, or one cook, live | `useCooks()`, `useCook(id)` | `src/hooks/use-cooks.ts` |
 | Dishes of one cook (or all with `null`), live | `useDishes(cookId)` | `src/hooks/use-dishes.ts` |
 | Saved cooks, with a toggle | `useFavourites()` | `src/hooks/use-favourites.ts` |
+| Saved-cook alert switches | `useAlertPrefs()` | `src/hooks/use-alert-prefs.ts` |
+| The customer's alerts, unread count, mark read | `useNotifications()` | `src/hooks/use-notifications.ts` |
+| Delivery requests for a rider (open, dismiss, accept) | `useOpenRequests()` | `src/hooks/use-open-requests.ts` |
+| Rider fee and distance text | `riderFee(km)`, `formatDistance(km)` | `src/utils/delivery.ts` |
+| The rider's active trip, picked up, delivered, cash collected, location | `useTrips()` | `src/hooks/use-trips.ts` |
+| Next trip step, map stops, distance between points | `tripStep`, `tripStops`, `distanceBetween` | `src/utils/trip.ts`, `src/utils/geo.ts` |
+| Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
 | Money, dates, mobile numbers | `formatPrice`, `formatDate`, `formatMobile` | `src/utils/format.ts` |

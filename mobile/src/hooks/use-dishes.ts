@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { subscribeToDishes } from '@/services/dishes';
+import { subscribeToDish, subscribeToDishes } from '@/services/dishes';
 import type { Dish, WithId } from '@/types';
 
 /**
@@ -35,4 +35,35 @@ export function useDishes(cookId: string | null) {
   };
 
   return { dishes, loading, error, reload };
+}
+
+/** Live data for one dish. dish is null while loading or when the id does not exist. */
+export function useDish(dishId: string) {
+  const [dish, setDish] = useState<WithId<Dish> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    return subscribeToDish(
+      dishId,
+      (next) => {
+        setDish(next);
+        setError('');
+        setLoading(false);
+      },
+      () => {
+        setError('Could not load this dish. Check your connection and try again.');
+        setLoading(false);
+      },
+    );
+  }, [dishId, attempt]);
+
+  const reload = () => {
+    setLoading(true);
+    setError('');
+    setAttempt((count) => count + 1);
+  };
+
+  return { dish, loading, error, reload };
 }

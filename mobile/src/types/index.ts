@@ -111,6 +111,10 @@ export type Order = {
   status: OrderStatus;
   declineReason: string;
   riderLocation: LatLng | null;
+  /** Where the cook hands over the food. Optional: R2 falls back to a fixed point in Galle Fort. */
+  pickup?: LatLng;
+  /** Where the customer is. Optional, same fallback. */
+  dropoff?: LatLng;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
@@ -139,6 +143,19 @@ export type Review = {
 export type Favourite = {
   uid: string;
   cookId: string;
+};
+
+/** alertPrefs/{uid}_{cookId}: whether a customer wants alerts about a saved cook (C8). */
+export type AlertPreference = {
+  uid: string;
+  cookId: string;
+  enabled: boolean;
+};
+
+/** dismissedRequests/{riderUid}_{orderId}: a delivery request this rider hid on R1. */
+export type DismissedRequest = {
+  uid: string;
+  orderId: string;
 };
 
 export type AppNotification = {
