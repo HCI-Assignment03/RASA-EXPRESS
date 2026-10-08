@@ -125,3 +125,22 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-C5-16 | C5 | FR03 | Create (invalid) | Cart has 3 of a dish | The cook sets that dish to 1 portion, then the customer taps Place order | Red box "Only 1 of ... left", no order is created, the cart is kept | | | | |
 | TC-C5-17 | C5 | FR03 | Create (invalid) | Cart has a dish | The cook switches the dish off, then the customer taps Place order | Red box says the dish is sold out, no order is created | | | | |
 | TC-C5-18 | C5 | FR03 | Create (invalid) | No network | Tap Place order | Error toast, no order created, the cart is kept | | | | |
+| TC-C6-01 | C6 | FR04 | Read | Customer has active and finished orders | Open the Orders tab | "On the way" lists active orders first, "Past orders" lists the rest, each with cook, items, time, status and total | | | | |
+| TC-C6-02 | C6 | FR04 | Read | Customer has no orders | Open the Orders tab | Message "You have not ordered yet" with a Find cooks button | | | | |
+| TC-C6-03 | C6 | FR04 | Read | An order exists | Tap it on the Orders tab | The tracking screen opens with the status, ETA, progress bar, items, total, payment and address | | | | |
+| TC-C6-04 | C6 | FR04, NFR08 | Read | Tracking screen open, cook confirms the order | The cook taps Accept, Start preparing, Mark as ready | The status text and progress bar update live without refreshing | | | | |
+| TC-C6-05 | C6 | FR04 | Read | An ASAP order | Look at the ETA line | "Arrives about <from> to <to>" using the order time and the cook's usual range | | | | |
+| TC-C6-06 | C6 | FR04 | Read | A pre-order for tomorrow at 12:30 PM | Look at the ETA line | "Scheduled for Tomorrow at 12:30 PM" | | | | |
+| TC-C6-07 | C6 | FR04 | Read | A rider accepts the order (R1) | Keep tracking open | The rider card with name and call button appears, and the map shows pickup, delivery address and the rider | | | | |
+| TC-C6-08 | C6 | FR04 | Read | The rider is on a trip with location allowed | Watch the map while the rider moves | The blue rider dot follows the rider's position | | | | |
+| TC-C6-09 | C6 | FR04 | Read | Order picked up by the rider | Look at the status | "On the way to you", progress bar at On the way | | | | |
+| TC-C6-10 | C6 | FR04 | Create | A rider has accepted the order | Type a message in the chat and tap Send | The message appears as an orange bubble and is saved in the order's messages | | | | |
+| TC-C6-11 | C6 | FR04 | Create (invalid) | Chat open | Tap Send with the box empty | The send button is disabled and nothing is sent | | | | |
+| TC-C6-12 | C6 | FR04 | Create (invalid) | Order has no rider yet | Look for the chat | The chat is not shown until a rider accepts | | | | |
+| TC-C6-13 | C6 | FR04 | Update | An order with status placed | Tap Cancel order, choose Cancel order | Toast "Order cancelled", status "You cancelled this order", the cook sees it under Past | | | | |
+| TC-C6-14 | C6 | FR04 | Update (cancel) | An order with status placed | Tap Cancel order, choose Keep order | The order is unchanged | | | | |
+| TC-C6-15 | C6 | FR04 | Update (invalid) | The cook has accepted the order | Look at the tracking screen | There is no Cancel order button | | | | |
+| TC-C6-16 | C6 | FR04 | Update (invalid) | Tracking open on status placed, the cook accepts just before the customer confirms the cancel | Confirm the cancel | Message that the cook just confirmed it, the order stays accepted | | | | |
+| TC-C6-17 | C6 | FR04 | Read | The cook declined the order | Open the order | Status "The cook could not take this order" with the reason, no progress bar | | | | |
+| TC-C6-18 | C6 | FR06 | Read | The rider delivered the order | Open the order | Status "Delivered", progress bar complete, a Rate your order button is shown | | | | |
+| TC-C6-19 | C6 | FR04 | Read | No network | Open an order | Error message with a Try again button | | | | |

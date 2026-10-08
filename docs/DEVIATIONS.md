@@ -12,5 +12,6 @@ The assignment requires every difference between the app and the prototype to be
 | D06 | C6 | Order tracking shown inside the tab bar (Orders highlighted) | Orders tab lists orders; tracking opens as a detail screen above the tabs | Expo Router stack above tabs is simpler; same information | | |
 | D07 | C2 | "Deliver to Galle Fort" with a dropdown, a "Map" link and a fourth "More" filter chip | Fixed "Galle Fort" label, no map link, three filter chips (Verified only, Top rated 4.7+, Pre-order) | No address book or map screen in scope; the Milestone 02 sketch review already rejected a map-first design | Kulathunga | 07.10.2026 |
 | D08 | R1 | "Dismiss request" removes the request | Dismiss hides the request for this rider only (a record in `dismissedRequests`). A "Show dismissed" button brings them back | Other riders must still be able to take the order, so it cannot be deleted | Lowe | 08.10.2026 |
+| D09 | C6, R2 | Chat between customer and rider | The customer can send messages to the rider on C6. The rider screens have no chat box, so the rider cannot read or reply in the app | R2 was scoped without a chat. The customer can still call the rider from the tracking screen | Fernando | 09.10.2026 |
 
 Delete or edit the example rows as the team decides.

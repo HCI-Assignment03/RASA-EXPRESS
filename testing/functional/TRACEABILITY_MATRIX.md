@@ -7,7 +7,7 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | FR01 | Browse verified home food sellers | C2, C3 | `customer/(tabs)/home.tsx`, `customer/cook/[id].tsx` | Kulathunga | |
 | FR02 | Menus with photos, prices, ingredients, nutrition | C3, C4 | `customer/cook/[id].tsx`, `customer/dish/[id].tsx` | Kulathunga, Lowe | TC-C4-01 to TC-C4-08 |
 | FR03 | Place food orders | C5 | `customer/checkout.tsx` | Fernando | TC-C5-01 to 11, 13, 14, 16 to 18 |
-| FR04 | Real-time order and delivery tracking | C6, R2 | `customer/track/[orderId].tsx`, `rider/(tabs)/trip.tsx` | Fernando, Lowe | TC-R2-02, 04, 05, 12 |
+| FR04 | Real-time order and delivery tracking | C6, R2 | `customer/track/[orderId].tsx`, `rider/(tabs)/trip.tsx` | Fernando, Lowe | TC-C6-01 to 17, 19, TC-R2-02, 04, 05, 12 |
 | FR05 | Multiple payment methods incl. COD | C5, S2, S4 | `customer/checkout.tsx`, `cook/order/[id].tsx`, `cook/(tabs)/sales.tsx` | Fernando, Manawadu | TC-C5-12, 15, TC-S2-05 to 08, TC-S4-08, 09 |
 | FR06 | Rate and review sellers, favourites | C2, C3, C7, C8 | `customer/review/[orderId].tsx`, `customer/(tabs)/favourites.tsx` | Fernando, Lowe | TC-C8-01, 02, 09 to 12 |
 | FR07 | Seller order dashboard | S1, S2 | `cook/(tabs)/orders.tsx`, `cook/order/[id].tsx` | Manawadu | TC-S1-01 to 04, 09 to 13, 15, TC-S2-01 to 04, 11 to 15 |
@@ -21,6 +21,6 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | NFR05 | Android and iOS | All | All | All | |
 | NFR06 | High availability | Back end | Firebase | Kulathunga | |
 | NFR07 | Easy to learn | C1, S1-S3 | | Kulathunga, Manawadu | (SUS) |
-| NFR08 | Real-time notifications | C6, C8 | `customer/track/[orderId].tsx`, `customer/(tabs)/favourites.tsx` | Fernando, Lowe | TC-C8-03 to 08 |
+| NFR08 | Real-time notifications | C6, C8 | `customer/track/[orderId].tsx`, `customer/(tabs)/favourites.tsx` | Fernando, Lowe | TC-C6-04, TC-C8-03 to 08 |
 
 Paths are relative to `mobile/src/app/`. Update the "Implemented in" column if you use different file names.
