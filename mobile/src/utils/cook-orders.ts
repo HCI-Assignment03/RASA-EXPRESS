@@ -119,3 +119,10 @@ export function paymentLabel(order: Pick<Order, 'paymentMethod' | 'paymentStatus
   const state = order.paymentStatus === 'received' ? 'received' : 'to collect';
   return `${METHOD_LABEL[order.paymentMethod]}, ${state}`;
 }
+
+/** The cook can confirm a payment that is still pending, unless the order was declined or cancelled. */
+export function canMarkPaid(order: Pick<Order, 'status' | 'paymentStatus'>): boolean {
+  return (
+    order.paymentStatus === 'pending' && order.status !== 'declined' && order.status !== 'cancelled'
+  );
+}

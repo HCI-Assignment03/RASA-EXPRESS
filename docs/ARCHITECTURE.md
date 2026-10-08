@@ -124,6 +124,8 @@ Changing a field name affects teammates: tell the group first.
 | Dish form text to a Dish, with error messages | `validateDishForm`, `dishToForm` | `src/utils/dish-form.ts` |
 | The cook's orders by tab, accept / prepare / ready / decline | `useCookOrders()` | `src/hooks/use-cook-orders.ts` |
 | Order tabs, next step, decline reasons, order number | `tabOf`, `nextStep`, `canDecline`, `orderNumber` | `src/utils/cook-orders.ts` |
+| One order live, and a user's name and phone | `useOrder(id)`, `useUserProfile(uid)` | `src/hooks/use-order.ts`, `src/hooks/use-user-profile.ts` |
+| Cook confirms a payment (also writes the payment record) | `markPaymentReceived(order)` | `src/services/cook-orders.ts` |
 | Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |

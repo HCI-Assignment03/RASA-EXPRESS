@@ -6,12 +6,13 @@ import {
   runTransaction,
   serverTimestamp,
   where,
+  writeBatch,
   type Transaction,
   type Unsubscribe,
 } from 'firebase/firestore';
 
-import type { CartItem, Dish, Order, OrderStatus, WithId } from '@/types';
-import { canDecline, newestFirst, nextStep } from '@/utils/cook-orders';
+import type { CartItem, Dish, Order, OrderStatus, Payment, WithId } from '@/types';
+import { canDecline, canMarkPaid, newestFirst, nextStep } from '@/utils/cook-orders';
 
 import { db } from './firebase';
 import { createNotification } from './notifications';
@@ -123,4 +124,46 @@ export async function declineOrder(order: WithId<Order>, reason: string): Promis
   });
 
   await tellCustomer(order, `Your order was declined: ${trimmed}`);
+}
+
+/** Read, live: one order, or null if it does not exist (S2). */
+export function subscribeToOrder(
+  orderId: string,
+  onData: (order: WithId<Order> | null) => void,
+  onError: (error: Error) => void,
+): Unsubscribe {
+  return onSnapshot(
+    orderRef(orderId),
+    (snapshot) =>
+      onData(
+        snapshot.exists()
+          ? { id: snapshot.id, ...(snapshot.data({ serverTimestamps: 'estimate' }) as Order) }
+          : null,
+      ),
+    onError,
+  );
+}
+
+/**
+ * Update (S2, S4): the cook confirms the payment arrived. Marks the order paid and writes the
+ * payment record that the sales screen (S4) adds up, in one batch. Cash uses the same payment id
+ * as the rider's "cash collected" (R2), so one order can never be counted twice.
+ */
+export async function markPaymentReceived(order: WithId<Order>): Promise<void> {
+  if (!canMarkPaid(order)) throw new OrderChangedError();
+
+  const payment: Omit<Payment, 'createdAt'> & { createdAt: unknown } = {
+    cookId: order.cookId,
+    orderId: order.id,
+    amount: order.total,
+    method: order.paymentMethod,
+    status: 'received',
+    createdAt: serverTimestamp(),
+  };
+  const paymentId = `${order.paymentMethod === 'cash' ? 'cash' : 'pay'}_${order.id}`;
+
+  const batch = writeBatch(db);
+  batch.set(doc(db, 'payments', paymentId), payment);
+  batch.update(orderRef(order.id), { paymentStatus: 'received', updatedAt: serverTimestamp() });
+  await batch.commit();
 }
