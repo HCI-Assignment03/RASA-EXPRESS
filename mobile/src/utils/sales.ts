@@ -55,3 +55,10 @@ export function parseSaleAmount(text: string): number | null {
   const amount = Number(trimmed);
   return amount > 0 ? amount : null;
 }
+
+/** A short amount for the chart bars: 0 is blank, 850 stays 850, 1600 becomes "1.6k". */
+export function compactAmount(amount: number): string {
+  if (amount <= 0) return '';
+  if (amount < 1000) return String(amount);
+  return `${(amount / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+}

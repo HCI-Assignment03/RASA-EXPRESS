@@ -126,3 +126,8 @@ export function canMarkPaid(order: Pick<Order, 'status' | 'paymentStatus'>): boo
     order.paymentStatus === 'pending' && order.status !== 'declined' && order.status !== 'cancelled'
   );
 }
+
+/** "Cash on delivery", "Card", "Bank transfer" or "Wallet". */
+export function methodLabel(method: PaymentMethod): string {
+  return METHOD_LABEL[method];
+}

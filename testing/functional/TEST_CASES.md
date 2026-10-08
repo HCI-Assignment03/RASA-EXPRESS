@@ -94,3 +94,16 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-S2-13 | S2 | FR09 | Read | A rider has accepted the order | Open the order | The Delivery card shows "Rider: <name>" | | | | |
 | TC-S2-14 | S2 | FR07 | Read | An order id that does not exist | Open the order screen with a wrong id | Message "This order could not be found" with Go back | | | | |
 | TC-S2-15 | S2 | FR07 | Read | No network | Open an order | Error message with a Try again button | | | | |
+| TC-S4-01 | S4 | FR10 | Read | Cook has payments from today (seed data) | Open the Sales tab | Today shows the total of payments received today, and "Last 7 days" shows the week total | | | | |
+| TC-S4-02 | S4 | FR10 | Read | Payments exist on several days | Look at the 7-day chart | Seven bars, oldest first, last one labelled Today in orange, amounts above the bars, the best day tallest | | | | |
+| TC-S4-03 | S4 | FR10 | Read | No payments at all | Open the Sales tab as a new cook | Today shows Rs. 0, the bars are flat and a message explains there are no payments yet | | | | |
+| TC-S4-04 | S4 | FR10 | Read | Payments exist | Look at Payments received | Newest first, each row shows the order number or the note, how it was paid and how long ago | | | | |
+| TC-S4-05 | S4 | FR10 | Create | On the Sales tab | Tap Add cash sale, enter 1000 and the note Test sale, tap Save sale | Toast, today total rises by 1000, the sale is the top row of Payments received | | | | |
+| TC-S4-06 | S4 | FR10 | Create (invalid) | Cash sale form open | Save with the amount empty | Error under the amount, nothing saved | | | | |
+| TC-S4-07 | S4 | FR10 | Create (invalid) | Cash sale form open | Enter 0, then 12.5, then abc and save each time | Each is rejected with the same error | | | | |
+| TC-S4-08 | S4 | FR05 | Update | An order with pending payment | Under Waiting for payment, tap Mark received | The card leaves the list, a payment row appears, today total rises, the order shows Paid in S2 | | | | |
+| TC-S4-09 | S4 | FR05 | Update | A rider recorded the cash for an order (R2) | Open the Sales tab | The order is not listed as waiting, and its cash appears once in Payments received | | | | |
+| TC-S4-10 | S4 | FR10 | Delete | A manual sale exists | Tap its trash button and choose Delete | The row disappears and today total drops by its amount | | | | |
+| TC-S4-11 | S4 | FR10 | Delete (cancel) | A manual sale exists | Tap its trash button and choose Keep | Nothing is removed | | | | |
+| TC-S4-12 | S4 | FR10 | Delete (invalid) | A payment for an order exists | Look at its row | It has no delete button | | | | |
+| TC-S4-13 | S4 | FR10 | Read | No network | Open the Sales tab | Error message with a Try again button | | | | |
