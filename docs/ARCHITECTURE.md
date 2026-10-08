@@ -120,6 +120,8 @@ Changing a field name affects teammates: tell the group first.
 | Rider fee and distance text | `riderFee(km)`, `formatDistance(km)` | `src/utils/delivery.ts` |
 | The rider's active trip, picked up, delivered, cash collected, location | `useTrips()` | `src/hooks/use-trips.ts` |
 | Next trip step, map stops, distance between points | `tripStep`, `tripStops`, `distanceBetween` | `src/utils/trip.ts`, `src/utils/geo.ts` |
+| The cook's own menu, add, edit, sold out, portions, delete | `useMenu()` | `src/hooks/use-menu.ts` |
+| Dish form text to a Dish, with error messages | `validateDishForm`, `dishToForm` | `src/utils/dish-form.ts` |
 | Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
