@@ -9,12 +9,14 @@ import { colors, fontSize, spacing } from '@/constants/theme';
 import { OrderRow } from '@/features/customer/order-row';
 import { useCooks } from '@/hooks/use-cooks';
 import { useMyOrders } from '@/hooks/use-my-orders';
+import { useMyReviews } from '@/hooks/use-my-reviews';
 import type { Order, WithId } from '@/types';
 
 // C6 Orders tab. Read: the customer's orders, active ones first. Tapping one opens its tracking.
 export default function OrdersScreen() {
   const orders = useMyOrders();
   const { cooks } = useCooks();
+  const myReviews = useMyReviews();
 
   const cookName = (cookId: string) =>
     cooks.find((cook) => cook.id === cookId)?.displayName ?? null;
@@ -55,6 +57,7 @@ export default function OrdersScreen() {
               key={order.id}
               order={order}
               cookName={cookName(order.cookId)}
+              review={myReviews.byOrder(order.id)}
               onPress={() => open(order)}
             />
           ))}
@@ -69,6 +72,7 @@ export default function OrdersScreen() {
               key={order.id}
               order={order}
               cookName={cookName(order.cookId)}
+              review={myReviews.byOrder(order.id)}
               onPress={() => open(order)}
             />
           ))}

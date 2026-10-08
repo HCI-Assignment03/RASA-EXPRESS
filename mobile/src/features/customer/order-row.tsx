@@ -1,15 +1,18 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, fontSize, radius, spacing, type Tone } from '@/constants/theme';
-import type { Order, WithId } from '@/types';
+import type { Order, Review, WithId } from '@/types';
 import { STATUS_TONE, itemsSummary, orderNumber } from '@/utils/cook-orders';
 import { formatPrice, formatTimeAgo } from '@/utils/format';
-import { customerStatus } from '@/utils/tracking';
+import { overallScore } from '@/utils/reviews';
+import { canReview, customerStatus } from '@/utils/tracking';
 
 type Props = {
   order: WithId<Order>;
   /** Name of the cook, or null if the cook no longer exists. */
   cookName: string | null;
+  /** The customer's review of this order, or null when it is not rated. */
+  review: WithId<Review> | null;
   onPress: () => void;
 };
 
@@ -22,7 +25,7 @@ const TONE_COLOR: Record<Tone, string> = {
 };
 
 /** One order in the C6 list: who cooked it, what it is, where it is now. */
-export function OrderRow({ order, cookName, onPress }: Props) {
+export function OrderRow({ order, cookName, review, onPress }: Props) {
   const status = customerStatus(order.status, order.riderId !== null);
 
   return (
@@ -47,6 +50,11 @@ export function OrderRow({ order, cookName, onPress }: Props) {
         </Text>
         <Text style={styles.total}>{formatPrice(order.total)}</Text>
       </View>
+      {canReview(order.status) ? (
+        <Text style={styles.rate}>
+          {review ? `You rated ${overallScore(review).toFixed(1)} stars` : 'Tap to rate this order'}
+        </Text>
+      ) : null}
     </Pressable>
   );
 }
@@ -78,4 +86,5 @@ const styles = StyleSheet.create({
   },
   status: { flex: 1, fontSize: fontSize.caption, fontWeight: '700' },
   total: { fontSize: fontSize.body, fontWeight: '800', color: colors.primaryDark },
+  rate: { fontSize: fontSize.caption, fontWeight: '600', color: colors.primaryDark },
 });

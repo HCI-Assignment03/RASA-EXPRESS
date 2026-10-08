@@ -13,6 +13,7 @@ import { ProgressBar } from '@/features/customer/progress-bar';
 import { TripMap } from '@/features/rider/trip-map';
 import { useCook } from '@/hooks/use-cooks';
 import { useOrder } from '@/hooks/use-order';
+import { useReview } from '@/hooks/use-review';
 import { useUserProfile } from '@/hooks/use-user-profile';
 import { OrderChangedError } from '@/services/cook-orders';
 import { cancelOrder } from '@/services/orders';
@@ -62,6 +63,7 @@ export default function TrackOrderScreen() {
 function TrackView({ order }: { order: WithId<Order> }) {
   const toast = useToast();
   const { cook } = useCook(order.cookId);
+  const { review } = useReview(order.id);
   const [cancelling, setCancelling] = useState(false);
 
   const step = progressIndex(order.status);
@@ -157,7 +159,7 @@ function TrackView({ order }: { order: WithId<Order> }) {
 
       {canReview(order.status) ? (
         <Button
-          title="Rate your order"
+          title={review ? 'Edit your review' : 'Rate your order'}
           icon="star-outline"
           onPress={() =>
             router.push({ pathname: '/customer/review/[orderId]', params: { orderId: order.id } })

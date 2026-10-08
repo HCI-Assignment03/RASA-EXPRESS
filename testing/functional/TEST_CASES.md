@@ -144,3 +144,19 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-C6-17 | C6 | FR04 | Read | The cook declined the order | Open the order | Status "The cook could not take this order" with the reason, no progress bar | | | | |
 | TC-C6-18 | C6 | FR06 | Read | The rider delivered the order | Open the order | Status "Delivered", progress bar complete, a Rate your order button is shown | | | | |
 | TC-C6-19 | C6 | FR04 | Read | No network | Open an order | Error message with a Try again button | | | | |
+| TC-C7-01 | C7 | FR06 | Read | An order is delivered | Open it from the Orders tab | The tracking screen shows a Rate your order button | | | | |
+| TC-C7-02 | C7 | FR06 | Read | A delivered order not yet rated | Look at it on the Orders tab | It says "Tap to rate this order" | | | | |
+| TC-C7-03 | C7 | FR06 | Create (invalid) | Review form open | Tap Submit review without choosing any stars | An error under each of Food, Hygiene and Delivery, nothing saved | | | | |
+| TC-C7-04 | C7 | FR06 | Create (invalid) | Review form open | Rate Food and Hygiene but not Delivery, then submit | Only the Delivery row shows an error | | | | |
+| TC-C7-05 | C7 | FR06 | Create | Review form open | Give 5, 4, 5 stars, tap two tags, write a comment, tap Submit review | Toast "Thank you for your review!", back to the previous screen | | | | |
+| TC-C7-06 | C7 | FR06 | Create | TC-C7-05 done | Open the cook page, Reviews tab | The new review is at the top and the cook's rating and review count have risen by one review | | | | |
+| TC-C7-07 | C7 | FR06 | Read | A rated order | Look at it on the Orders tab | It says "You rated 4.7 stars" (the average of the three ratings) | | | | |
+| TC-C7-08 | C7 | FR06 | Read | A rated order | Open the order and tap Edit your review | The screen is titled Your review with the stars, tags and comment filled in | | | | |
+| TC-C7-09 | C7 | FR06 | Update | A rated order | Change Delivery to 2 and tap Save changes | Toast "Review updated", the cook's rating changes to match, the review keeps its date | | | | |
+| TC-C7-10 | C7 | FR06 | Update | Review form open | Type more than 300 characters in the comment | Input stops at 300 and the counter shows 300 / 300 | | | | |
+| TC-C7-11 | C7 | FR06 | Delete | A rated order | Tap Delete review and choose Delete | Toast "Review deleted", the review is gone from the cook page and the rating is back to how it was | | | | |
+| TC-C7-12 | C7 | FR06 | Delete (cancel) | A rated order | Tap Delete review and choose Keep | The review is unchanged | | | | |
+| TC-C7-13 | C7 | FR06 | Delete | TC-C7-11 done | Look at the order on the Orders tab | It says "Tap to rate this order" again and a new review can be written | | | | |
+| TC-C7-14 | C7 | FR06 | Create (invalid) | An order that is not delivered | Open its review screen by a direct link (the app has no button for it) | Message "You can rate an order once it has been delivered" | | | | |
+| TC-C7-15 | C7 | FR06 | Create | One order | Submit a review, then open the same order's review again and submit | The second submit edits the same review. There is only one review per order | | | | |
+| TC-C7-16 | C7 | FR06 | Create (invalid) | No network | Tap Submit review | Error toast, nothing saved, the form keeps what was typed | | | | |
