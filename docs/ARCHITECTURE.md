@@ -128,6 +128,8 @@ Changing a field name affects teammates: tell the group first.
 | Cook confirms a payment (also writes the payment record) | `markPaymentReceived(order)` | `src/services/cook-orders.ts` |
 | The cook's sales: today total, 7-day bars, pending payments, manual sales | `useSales()` | `src/hooks/use-sales.ts` |
 | Day totals, chart bars, amount parsing | `dayTotal`, `lastSevenDays`, `parseSaleAmount` | `src/utils/sales.ts` |
+| Place an order from the cart (checks stock, empties the cart), cancel while placed | `placeOrder`, `cancelOrder` | `src/services/orders.ts` |
+| Checkout rules: schedule options, cut-off, form check, payment options | `scheduleOptions`, `validateCheckout`, `PAYMENT_OPTIONS` | `src/utils/checkout.ts` |
 | Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
