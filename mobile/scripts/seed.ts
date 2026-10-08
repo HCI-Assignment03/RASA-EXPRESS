@@ -26,7 +26,7 @@ import {
   type Firestore,
 } from 'firebase/firestore';
 
-import type { AppNotification, Cook, Dish, Order, Review, Role } from '../src/types';
+import type { AppNotification, Cook, Dish, Order, Payment, Review, Role } from '../src/types';
 
 // Test accounts for the shared development project only. Not real people.
 const SEED_PASSWORD = 'Rasa@2026';
@@ -297,6 +297,176 @@ const SEED_REQUESTS = [
   },
 ];
 
+// Orders for the cook screens (S1, S2, S4), in every status. Dish ids match the seeded menus, so
+// accepting an order really takes portions off the menu. daysAgo / minutesAgo set the order time.
+type SeedCookOrder = {
+  cook: string;
+  status: Order['status'];
+  minutesAgo: number;
+  paymentMethod: Order['paymentMethod'];
+  paymentStatus: Order['paymentStatus'];
+  address: string;
+  landmark: string;
+  declineReason?: string;
+  items: { dish: string; price: number; qty: number; note: string }[];
+};
+
+const SEED_COOK_ORDERS: SeedCookOrder[] = [
+  {
+    cook: 'bhanuka',
+    status: 'placed',
+    minutesAgo: 4,
+    paymentMethod: 'cash',
+    paymentStatus: 'pending',
+    address: '21 Leyn Baan Street, Galle Fort',
+    landmark: 'Near the Fort clock tower',
+    items: [
+      { dish: 'Chicken Rice & Curry', price: 650, qty: 2, note: 'Less spicy' },
+      { dish: 'Watalappan', price: 300, qty: 1, note: '' },
+    ],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'placed',
+    minutesAgo: 11,
+    paymentMethod: 'card',
+    paymentStatus: 'pending',
+    address: '5 Hospital Street, Galle Fort',
+    landmark: 'Blue gate opposite the post office',
+    items: [{ dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 1, note: 'No chilli please' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'accepted',
+    minutesAgo: 25,
+    paymentMethod: 'cash',
+    paymentStatus: 'pending',
+    address: '30 Church Street, Galle Fort',
+    landmark: 'Next to the museum',
+    items: [{ dish: 'Vegetable Rice & Curry', price: 550, qty: 3, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'preparing',
+    minutesAgo: 40,
+    paymentMethod: 'card',
+    paymentStatus: 'pending',
+    address: '2 Lighthouse Road, Galle Fort',
+    landmark: 'Beside the lighthouse',
+    items: [
+      { dish: 'Chicken Rice & Curry', price: 650, qty: 1, note: '' },
+      { dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 1, note: '' },
+    ],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'declined',
+    minutesAgo: 60 * 5,
+    paymentMethod: 'cash',
+    paymentStatus: 'pending',
+    address: '9 Pedlar Street, Galle Fort',
+    landmark: 'Green shop front',
+    declineReason: 'Sold out',
+    items: [{ dish: 'Watalappan', price: 300, qty: 2, note: '' }],
+  },
+  {
+    cook: 'nimali',
+    status: 'placed',
+    minutesAgo: 7,
+    paymentMethod: 'cash',
+    paymentStatus: 'pending',
+    address: '14 Parawa Street, Galle Fort',
+    landmark: 'Opposite the art gallery',
+    items: [{ dish: 'Egg Hoppers (3)', price: 450, qty: 2, note: 'Soft eggs' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 90,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Chicken Rice & Curry', price: 650, qty: 1, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 1500,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [
+      { dish: 'Chicken Rice & Curry', price: 650, qty: 2, note: '' },
+      { dish: 'Watalappan', price: 300, qty: 1, note: '' },
+    ],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 1640,
+    paymentMethod: 'card',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 2, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 2940,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Vegetable Rice & Curry', price: 550, qty: 3, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 4380,
+    paymentMethod: 'card',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [
+      { dish: 'Chicken Rice & Curry', price: 650, qty: 1, note: '' },
+      { dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 1, note: '' },
+    ],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 5820,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Chicken Rice & Curry', price: 650, qty: 3, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 7260,
+    paymentMethod: 'card',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Vegetable Rice & Curry', price: 550, qty: 2, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 8700,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 2, note: '' }],
+  },
+];
+
 // Set in main() once the .env values have been checked.
 let auth: Auth;
 let db: Firestore;
@@ -446,6 +616,86 @@ async function seedRequests(uids: Record<string, string>): Promise<void> {
   console.log(`ok  ${SEED_REQUESTS.length} sample delivery requests`);
 }
 
+async function seedCookOrders(uids: Record<string, string>): Promise<void> {
+  const customer = SEED_USERS.find((user) => user.role === 'customer');
+  if (!customer) return;
+
+  const customerId = await signInOrCreate(customer);
+  let count = 0;
+  for (const order of SEED_COOK_ORDERS) {
+    count += 1;
+    const items = order.items.map(({ dish, ...line }) => ({
+      ...line,
+      name: dish,
+      dishId: `${order.cook}-${slug(dish)}`,
+    }));
+    const document: Order = {
+      customerId,
+      cookId: uids[order.cook],
+      riderId: order.status === 'delivered' ? uids.imasha : null,
+      items,
+      total: items.reduce((sum, item) => sum + item.price * item.qty, 0),
+      schedule: { when: 'asap', time: '' },
+      address: order.address,
+      landmark: order.landmark,
+      paymentMethod: order.paymentMethod,
+      paymentStatus: order.paymentStatus,
+      status: order.status,
+      declineReason: order.declineReason ?? '',
+      riderLocation: null,
+      createdAt: Timestamp.fromMillis(Date.now() - order.minutesAgo * 60 * 1000),
+      updatedAt: serverTimestamp() as unknown as Timestamp,
+    };
+    await setDoc(doc(db, 'orders', `seed-cook-order-${count}`), document);
+  }
+  await signOut(auth);
+  console.log(`ok  ${SEED_COOK_ORDERS.length} sample cook orders`);
+}
+
+// Walk-in cash sales typed in by the cook (S4), so the manual entries have something to show.
+const SEED_MANUAL_SALES = [
+  { amount: 500, note: 'Walk-in lunch', minutesAgo: 45 },
+  { amount: 750, note: 'Neighbour, 2 short eats boxes', minutesAgo: 1440 + 120 },
+];
+
+/** Payments for the delivered orders and the manual sales, written by the cook (S4). */
+async function seedPayments(uids: Record<string, string>): Promise<void> {
+  const cook = SEED_USERS.find((user) => user.key === 'bhanuka');
+  if (!cook) return;
+
+  await signInOrCreate(cook);
+  let count = 0;
+  for (const [index, order] of SEED_COOK_ORDERS.entries()) {
+    if (order.status !== 'delivered') continue;
+    count += 1;
+    const total = order.items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const payment: Payment = {
+      cookId: uids.bhanuka,
+      orderId: `seed-cook-order-${index + 1}`,
+      amount: total,
+      method: order.paymentMethod,
+      status: 'received',
+      createdAt: Timestamp.fromMillis(Date.now() - order.minutesAgo * 60 * 1000),
+    };
+    await setDoc(doc(db, 'payments', `seed-payment-${count}`), payment);
+  }
+  for (const [index, sale] of SEED_MANUAL_SALES.entries()) {
+    count += 1;
+    const payment: Payment = {
+      cookId: uids.bhanuka,
+      orderId: null,
+      amount: sale.amount,
+      method: 'cash',
+      status: 'received',
+      note: sale.note,
+      createdAt: Timestamp.fromMillis(Date.now() - sale.minutesAgo * 60 * 1000),
+    };
+    await setDoc(doc(db, 'payments', `seed-manual-${index + 1}`), payment);
+  }
+  await signOut(auth);
+  console.log(`ok  ${count} sample payments`);
+}
+
 async function main(): Promise<void> {
   const missing = ['EXPO_PUBLIC_FIREBASE_API_KEY', 'EXPO_PUBLIC_FIREBASE_PROJECT_ID'].filter(
     (name) => !process.env[name],
@@ -473,6 +723,8 @@ async function main(): Promise<void> {
   await seedReviews(uids);
   await seedNotifications();
   await seedRequests(uids);
+  await seedCookOrders(uids);
+  await seedPayments(uids);
   console.log(
     '\nDone. The password for every test account is SEED_PASSWORD in mobile/scripts/seed.ts.',
   );

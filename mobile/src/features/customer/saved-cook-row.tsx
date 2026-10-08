@@ -61,7 +61,8 @@ export function SavedCookRow({ cook, alertsOn, onOpen, onToggleAlerts, onRemove 
           accessibilityLabel={`Alerts for ${cook.displayName}`}
           value={alertsOn}
           onValueChange={onToggleAlerts}
-          trackColor={{ false: colors.border, true: colors.primary }}
+          trackColor={{ false: colors.switchOff, true: colors.primary }}
+          ios_backgroundColor={colors.switchOff}
           thumbColor={colors.surface}
         />
       </View>

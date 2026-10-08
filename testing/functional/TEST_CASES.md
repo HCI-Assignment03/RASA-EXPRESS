@@ -51,3 +51,59 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-R2-11 | R2 | FR09 | Update | Order paid online | Mark as picked up, then look at the buttons | Goes straight to Mark as delivered with no cash step | | | | |
 | TC-R2-12 | R2 | FR04 | Read | No internet | Open an active trip | Map area explains it could not load. Address, landmark and Navigate still work | | | | |
 | TC-R2-13 | R2 | FR09 | Read | Rider accepted two requests | Open Active trip | The older trip is shown, with "1 more trip is waiting". After delivering it, the next one appears | | | | |
+| TC-S3-01 | S3 | FR08 | Read | Signed in as a cook with dishes | Open the Menu tab | Heading shows "N dishes, M on sale today" and one card per dish, sold-out dishes last | | | | |
+| TC-S3-02 | S3 | FR08 | Create | On the Menu tab | Tap Add dish, fill every field correctly, tap Save dish | Toast "Dish added", the dish appears in the list and on the customer's cook page | | | | |
+| TC-S3-03 | S3 | FR08 | Create (invalid) | Add dish form open | Tap Save dish with the form empty | Errors under name, price, portions and ingredients, nothing saved | | | | |
+| TC-S3-04 | S3 | FR08 | Create (invalid) | Add dish form open | Enter price 12.5, portions 2.5 and nutrition "abc" | Each field shows its own error, nothing saved | | | | |
+| TC-S3-05 | S3 | FR08 | Update | A dish is on sale | Turn the On sale today switch off | Dish shows Sold out, customers see it as sold out | | | | |
+| TC-S3-06 | S3 | FR08 | Update | A dish with portions | Press + and − on the portion stepper | The number changes each press and customers see the same count | | | | |
+| TC-S3-07 | S3 | FR08 | Update | A dish with 1 portion | Press − to reach 0 | Dish becomes Sold out and its switch turns off. Pressing + puts it back on sale | | | | |
+| TC-S3-08 | S3 | FR08 | Update (invalid) | A dish with 0 portions | Turn its switch on | Message "Add some portions first", the switch stays off | | | | |
+| TC-S3-09 | S3 | FR08 | Update | A dish on the menu | Tap Edit, change the price, save | The new price shows on the card and for customers | | | | |
+| TC-S3-10 | S3 | FR08 | Update | A dish switched off by the cook, with portions | Tap Edit, change the name, save | The dish stays switched off | | | | |
+| TC-S3-11 | S3 | FR08 | Delete | A dish on the menu | Tap Delete, choose Delete | Dish removed from the list and from the customer's view | | | | |
+| TC-S3-12 | S3 | FR08 | Delete (cancel) | A dish on the menu | Tap Delete, choose Keep | Nothing is removed | | | | |
+| TC-S3-13 | S3 | FR08 | Read | A cook with no dishes | Open the Menu tab | Message "You have no dishes yet" with the Add dish button | | | | |
+| TC-S1-01 | S1 | FR07 | Read | Cook has orders in several statuses (seed data) | Open the Orders tab and look at each tab | Tabs New, Preparing, Ready, Past show the right orders with counts, newest first | | | | |
+| TC-S1-02 | S1 | FR07 | Read | A new order exists | Look at an order card | Order number, status badge, time, items, address with landmark, payment line and total are shown | | | | |
+| TC-S1-03 | S1 | FR07 | Read | A customer places a new order (or one is seeded) | Keep the Orders tab open | The order appears under New without refreshing | | | | |
+| TC-S1-04 | S1 | FR07 | Read | A tab has no orders | Open that tab | A message explains the tab is empty | | | | |
+| TC-S1-05 | S1 | FR08 | Update | A new order | Tap Accept order | The order moves to Preparing, the dish portions drop by the quantity ordered, the customer gets an alert | | | | |
+| TC-S1-06 | S1 | FR08 | Update | An accepted order | Tap Start preparing | The badge changes to Preparing and the customer gets an alert | | | | |
+| TC-S1-07 | S1 | FR08 | Update | A preparing order | Tap Mark as ready | The order moves to the Ready tab, appears in the rider requests, customer gets an alert | | | | |
+| TC-S1-08 | S1 | FR08 | Update | A dish with few portions left | Accept orders until the dish reaches 0 portions | The dish is marked sold out on the Menu tab and for customers | | | | |
+| TC-S1-09 | S1 | FR07 | Delete | A new order | Tap Decline, choose Sold out, confirm | The order moves to Past as Declined with the reason, customer gets an alert | | | | |
+| TC-S1-10 | S1 | FR07 | Delete (invalid) | Decline form open | Choose Other reason and tap Decline with nothing typed | Error asks for a reason, nothing declined | | | | |
+| TC-S1-11 | S1 | FR07 | Delete | An accepted order | Decline it with a reason | Portions taken at accept are put back on the menu | | | | |
+| TC-S1-12 | S1 | FR07 | Delete (cancel) | Decline form open | Tap Keep order | The order is unchanged | | | | |
+| TC-S1-13 | S1 | FR07 | Update (invalid) | A preparing order | Look at the card | No Decline button, only Mark as ready | | | | |
+| TC-S1-14 | S1 | FR07 | Update (invalid) | An order shown as New on the cook phone | The customer cancels it, then the cook taps Accept order | Message "This order has changed", the order is not accepted | | | | |
+| TC-S1-15 | S1 | FR07 | Read | An order card | Tap the card | The order detail screen (S2) opens | | | | |
+| TC-S2-01 | S2 | FR07 | Read | Cook has orders | On the Orders tab, tap an order card | Detail screen opens with the order number, status badge and how long ago it was ordered | | | | |
+| TC-S2-02 | S2 | FR07 | Read | Order detail open | Look at the Customer card | Customer name and phone number are shown | | | | |
+| TC-S2-03 | S2 | FR07 | Read | Customer card shown | Tap the phone number | The phone dialler opens with that number | | | | |
+| TC-S2-04 | S2 | FR07 | Read | An order with items and a note | Look at the Items and Delivery cards | Each item shows quantity, name, line price and the note. The total, address, landmark and schedule are correct | | | | |
+| TC-S2-05 | S2 | FR05 | Read | A card order with pending payment | Look at the Payment card | Shows the method with "to collect" and a Pending badge | | | | |
+| TC-S2-06 | S2 | FR05 | Update | A card order with pending payment | Tap Mark payment received | Toast, badge turns Paid, the button disappears, a `pay_<orderId>` payment exists in Firebase | | | | |
+| TC-S2-07 | S2 | FR05 | Update (invalid) | An order already paid | Look at the Payment card | There is no Mark payment received button | | | | |
+| TC-S2-08 | S2 | FR05 | Update (invalid) | A declined order with pending payment | Open it | There is no Mark payment received button | | | | |
+| TC-S2-09 | S2 | FR08 | Update | A new order | Tap Accept order, then Start preparing, then Mark as ready | The badge changes live after each tap, the customer gets an alert each time | | | | |
+| TC-S2-10 | S2 | FR08 | Update | A ready order | Look at the action buttons | No action buttons are shown | | | | |
+| TC-S2-11 | S2 | FR07 | Delete | A new order | Tap Decline order, choose a reason, confirm | Detail shows Declined with the reason, customer gets an alert | | | | |
+| TC-S2-12 | S2 | FR07 | Delete (invalid) | Decline form open | Choose Other reason, leave it empty, tap Decline | Error asks for a reason, order not declined | | | | |
+| TC-S2-13 | S2 | FR09 | Read | A rider has accepted the order | Open the order | The Delivery card shows "Rider: <name>" | | | | |
+| TC-S2-14 | S2 | FR07 | Read | An order id that does not exist | Open the order screen with a wrong id | Message "This order could not be found" with Go back | | | | |
+| TC-S2-15 | S2 | FR07 | Read | No network | Open an order | Error message with a Try again button | | | | |
+| TC-S4-01 | S4 | FR10 | Read | Cook has payments from today (seed data) | Open the Sales tab | Today shows the total of payments received today, and "Last 7 days" shows the week total | | | | |
+| TC-S4-02 | S4 | FR10 | Read | Payments exist on several days | Look at the 7-day chart | Seven bars, oldest first, last one labelled Today in orange, amounts above the bars, the best day tallest | | | | |
+| TC-S4-03 | S4 | FR10 | Read | No payments at all | Open the Sales tab as a new cook | Today shows Rs. 0, the bars are flat and a message explains there are no payments yet | | | | |
+| TC-S4-04 | S4 | FR10 | Read | Payments exist | Look at Payments received | Newest first, each row shows the order number or the note, how it was paid and how long ago | | | | |
+| TC-S4-05 | S4 | FR10 | Create | On the Sales tab | Tap Add cash sale, enter 1000 and the note Test sale, tap Save sale | Toast, today total rises by 1000, the sale is the top row of Payments received | | | | |
+| TC-S4-06 | S4 | FR10 | Create (invalid) | Cash sale form open | Save with the amount empty | Error under the amount, nothing saved | | | | |
+| TC-S4-07 | S4 | FR10 | Create (invalid) | Cash sale form open | Enter 0, then 12.5, then abc and save each time | Each is rejected with the same error | | | | |
+| TC-S4-08 | S4 | FR05 | Update | An order with pending payment | Under Waiting for payment, tap Mark received | The card leaves the list, a payment row appears, today total rises, the order shows Paid in S2 | | | | |
+| TC-S4-09 | S4 | FR05 | Update | A rider recorded the cash for an order (R2) | Open the Sales tab | The order is not listed as waiting, and its cash appears once in Payments received | | | | |
+| TC-S4-10 | S4 | FR10 | Delete | A manual sale exists | Tap its trash button and choose Delete | The row disappears and today total drops by its amount | | | | |
+| TC-S4-11 | S4 | FR10 | Delete (cancel) | A manual sale exists | Tap its trash button and choose Keep | Nothing is removed | | | | |
+| TC-S4-12 | S4 | FR10 | Delete (invalid) | A payment for an order exists | Look at its row | It has no delete button | | | | |
+| TC-S4-13 | S4 | FR10 | Read | No network | Open the Sales tab | Error message with a Try again button | | | | |

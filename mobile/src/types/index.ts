@@ -172,5 +172,7 @@ export type Payment = {
   amount: number;
   method: PaymentMethod;
   status: PaymentStatus;
+  /** A short remark on a manual entry, such as "Walk-in lunch". */
+  note?: string;
   createdAt: Timestamp;
 };
