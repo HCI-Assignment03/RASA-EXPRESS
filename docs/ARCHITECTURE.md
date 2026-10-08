@@ -133,6 +133,9 @@ Changing a field name affects teammates: tell the group first.
 | The customer's orders, active and past, live | `useMyOrders()` | `src/hooks/use-my-orders.ts` |
 | One order's chat, live, and sending a message | `useChat(orderId)` | `src/hooks/use-chat.ts` |
 | Progress step, customer wording of a status, ETA text, can cancel / chat / review | `progressIndex`, `customerStatus`, `etaText`, `canCancel`, `canChat`, `canReview` | `src/utils/tracking.ts` |
+| One order's review, create / edit / delete (updates the cook rating) | `useReview(orderId)` | `src/hooks/use-review.ts` |
+| Which of my orders are rated | `useMyReviews()` | `src/hooks/use-my-reviews.ts` |
+| Review form check, tags, running cook rating | `validateReview`, `REVIEW_TAGS`, `ratingAfterAdd/Edit/Remove` | `src/utils/reviews.ts` |
 | Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
