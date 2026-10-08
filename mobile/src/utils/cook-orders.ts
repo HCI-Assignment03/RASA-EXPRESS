@@ -1,4 +1,5 @@
-import type { Order, OrderStatus, WithId } from '@/types';
+import type { Tone } from '@/constants/theme';
+import type { Order, OrderStatus, PaymentMethod, WithId } from '@/types';
 
 // Order rules for the cook screens (S1 dashboard, S2 detail). Pure functions, covered by tests.
 // The status lifecycle is placed -> accepted -> preparing -> ready. After "ready" the rider takes
@@ -81,4 +82,40 @@ export function itemsSummary(order: Pick<Order, 'items'>): string {
 /** Orders newest first. */
 export function newestFirst<T extends WithId<Order>>(orders: T[]): T[] {
   return [...orders].sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+}
+
+/** The status as the cook reads it. */
+export const STATUS_LABEL: Record<OrderStatus, string> = {
+  placed: 'New',
+  accepted: 'Accepted',
+  preparing: 'Preparing',
+  ready: 'Ready for rider',
+  picked_up: 'On the way',
+  delivered: 'Delivered',
+  declined: 'Declined',
+  cancelled: 'Cancelled by customer',
+};
+
+export const STATUS_TONE: Record<OrderStatus, Tone> = {
+  placed: 'primary',
+  accepted: 'primary',
+  preparing: 'warning',
+  ready: 'success',
+  picked_up: 'success',
+  delivered: 'success',
+  declined: 'danger',
+  cancelled: 'neutral',
+};
+
+const METHOD_LABEL: Record<PaymentMethod, string> = {
+  cash: 'Cash on delivery',
+  card: 'Card',
+  bank: 'Bank transfer',
+  wallet: 'Wallet',
+};
+
+/** "Cash on delivery, to collect" or "Card, received". */
+export function paymentLabel(order: Pick<Order, 'paymentMethod' | 'paymentStatus'>): string {
+  const state = order.paymentStatus === 'received' ? 'received' : 'to collect';
+  return `${METHOD_LABEL[order.paymentMethod]}, ${state}`;
 }
