@@ -122,6 +122,8 @@ Changing a field name affects teammates: tell the group first.
 | Next trip step, map stops, distance between points | `tripStep`, `tripStops`, `distanceBetween` | `src/utils/trip.ts`, `src/utils/geo.ts` |
 | The cook's own menu, add, edit, sold out, portions, delete | `useMenu()` | `src/hooks/use-menu.ts` |
 | Dish form text to a Dish, with error messages | `validateDishForm`, `dishToForm` | `src/utils/dish-form.ts` |
+| The cook's orders by tab, accept / prepare / ready / decline | `useCookOrders()` | `src/hooks/use-cook-orders.ts` |
+| Order tabs, next step, decline reasons, order number | `tabOf`, `nextStep`, `canDecline`, `orderNumber` | `src/utils/cook-orders.ts` |
 | Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |

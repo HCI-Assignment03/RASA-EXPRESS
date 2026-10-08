@@ -297,6 +297,90 @@ const SEED_REQUESTS = [
   },
 ];
 
+// Orders for the cook screens (S1, S2, S4), in every status. Dish ids match the seeded menus, so
+// accepting an order really takes portions off the menu. daysAgo / minutesAgo set the order time.
+type SeedCookOrder = {
+  cook: string;
+  status: Order['status'];
+  minutesAgo: number;
+  paymentMethod: Order['paymentMethod'];
+  paymentStatus: Order['paymentStatus'];
+  address: string;
+  landmark: string;
+  declineReason?: string;
+  items: { dish: string; price: number; qty: number; note: string }[];
+};
+
+const SEED_COOK_ORDERS: SeedCookOrder[] = [
+  {
+    cook: 'bhanuka',
+    status: 'placed',
+    minutesAgo: 4,
+    paymentMethod: 'cash',
+    paymentStatus: 'pending',
+    address: '21 Leyn Baan Street, Galle Fort',
+    landmark: 'Near the Fort clock tower',
+    items: [
+      { dish: 'Chicken Rice & Curry', price: 650, qty: 2, note: 'Less spicy' },
+      { dish: 'Watalappan', price: 300, qty: 1, note: '' },
+    ],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'placed',
+    minutesAgo: 11,
+    paymentMethod: 'card',
+    paymentStatus: 'pending',
+    address: '5 Hospital Street, Galle Fort',
+    landmark: 'Blue gate opposite the post office',
+    items: [{ dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 1, note: 'No chilli please' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'accepted',
+    minutesAgo: 25,
+    paymentMethod: 'cash',
+    paymentStatus: 'pending',
+    address: '30 Church Street, Galle Fort',
+    landmark: 'Next to the museum',
+    items: [{ dish: 'Vegetable Rice & Curry', price: 550, qty: 3, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'preparing',
+    minutesAgo: 40,
+    paymentMethod: 'card',
+    paymentStatus: 'pending',
+    address: '2 Lighthouse Road, Galle Fort',
+    landmark: 'Beside the lighthouse',
+    items: [
+      { dish: 'Chicken Rice & Curry', price: 650, qty: 1, note: '' },
+      { dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 1, note: '' },
+    ],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'declined',
+    minutesAgo: 60 * 5,
+    paymentMethod: 'cash',
+    paymentStatus: 'pending',
+    address: '9 Pedlar Street, Galle Fort',
+    landmark: 'Green shop front',
+    declineReason: 'Sold out',
+    items: [{ dish: 'Watalappan', price: 300, qty: 2, note: '' }],
+  },
+  {
+    cook: 'nimali',
+    status: 'placed',
+    minutesAgo: 7,
+    paymentMethod: 'cash',
+    paymentStatus: 'pending',
+    address: '14 Parawa Street, Galle Fort',
+    landmark: 'Opposite the art gallery',
+    items: [{ dish: 'Egg Hoppers (3)', price: 450, qty: 2, note: 'Soft eggs' }],
+  },
+];
+
 // Set in main() once the .env values have been checked.
 let auth: Auth;
 let db: Firestore;
@@ -446,6 +530,42 @@ async function seedRequests(uids: Record<string, string>): Promise<void> {
   console.log(`ok  ${SEED_REQUESTS.length} sample delivery requests`);
 }
 
+async function seedCookOrders(uids: Record<string, string>): Promise<void> {
+  const customer = SEED_USERS.find((user) => user.role === 'customer');
+  if (!customer) return;
+
+  const customerId = await signInOrCreate(customer);
+  let count = 0;
+  for (const order of SEED_COOK_ORDERS) {
+    count += 1;
+    const items = order.items.map(({ dish, ...line }) => ({
+      ...line,
+      name: dish,
+      dishId: `${order.cook}-${slug(dish)}`,
+    }));
+    const document: Order = {
+      customerId,
+      cookId: uids[order.cook],
+      riderId: order.status === 'delivered' ? uids.imasha : null,
+      items,
+      total: items.reduce((sum, item) => sum + item.price * item.qty, 0),
+      schedule: { when: 'asap', time: '' },
+      address: order.address,
+      landmark: order.landmark,
+      paymentMethod: order.paymentMethod,
+      paymentStatus: order.paymentStatus,
+      status: order.status,
+      declineReason: order.declineReason ?? '',
+      riderLocation: null,
+      createdAt: Timestamp.fromMillis(Date.now() - order.minutesAgo * 60 * 1000),
+      updatedAt: serverTimestamp() as unknown as Timestamp,
+    };
+    await setDoc(doc(db, 'orders', `seed-cook-order-${count}`), document);
+  }
+  await signOut(auth);
+  console.log(`ok  ${SEED_COOK_ORDERS.length} sample cook orders`);
+}
+
 async function main(): Promise<void> {
   const missing = ['EXPO_PUBLIC_FIREBASE_API_KEY', 'EXPO_PUBLIC_FIREBASE_PROJECT_ID'].filter(
     (name) => !process.env[name],
@@ -473,6 +593,7 @@ async function main(): Promise<void> {
   await seedReviews(uids);
   await seedNotifications();
   await seedRequests(uids);
+  await seedCookOrders(uids);
   console.log(
     '\nDone. The password for every test account is SEED_PASSWORD in mobile/scripts/seed.ts.',
   );
