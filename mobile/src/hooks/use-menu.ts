@@ -22,11 +22,18 @@ export function useMenu() {
     edit: (dishId: string, input: DishInput) => updateDish(dishId, input),
     /** Sold out today / back on sale. Switching on with no portions left is the caller's to prevent. */
     setAvailable: (dishId: string, available: boolean) => updateDish(dishId, { available }),
-    /** Setting 0 portions also marks the dish sold out. */
-    setPortions: (dishId: string, portionsLeft: number) =>
+    /**
+     * Setting 0 portions also marks the dish sold out. `restock` puts a dish that had run out
+     * back on sale when portions are added again.
+     */
+    setPortions: (dishId: string, portionsLeft: number, restock = false) =>
       updateDish(
         dishId,
-        portionsLeft <= 0 ? { portionsLeft: 0, available: false } : { portionsLeft },
+        portionsLeft <= 0
+          ? { portionsLeft: 0, available: false }
+          : restock
+            ? { portionsLeft, available: true }
+            : { portionsLeft },
       ),
     remove: (dishId: string) => deleteDish(dishId),
   };

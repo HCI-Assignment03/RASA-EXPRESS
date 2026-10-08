@@ -12,6 +12,8 @@ export const colors = {
   text: '#2B2118',
   textMuted: '#7A6A5D',
   border: '#EFE3D6',
+  /** Track of a switch that is off. Darker than `border` so it can be seen on a white card. */
+  switchOff: '#BFB2A5',
   success: '#2E9E5B',
   successSoft: '#E4F4EA',
   warning: '#B7791F',
