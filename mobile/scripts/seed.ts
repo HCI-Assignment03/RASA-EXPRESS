@@ -26,7 +26,7 @@ import {
   type Firestore,
 } from 'firebase/firestore';
 
-import type { AppNotification, Cook, Dish, Order, Review, Role } from '../src/types';
+import type { AppNotification, Cook, Dish, Order, Payment, Review, Role } from '../src/types';
 
 // Test accounts for the shared development project only. Not real people.
 const SEED_PASSWORD = 'Rasa@2026';
@@ -379,6 +379,92 @@ const SEED_COOK_ORDERS: SeedCookOrder[] = [
     landmark: 'Opposite the art gallery',
     items: [{ dish: 'Egg Hoppers (3)', price: 450, qty: 2, note: 'Soft eggs' }],
   },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 90,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Chicken Rice & Curry', price: 650, qty: 1, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 1500,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [
+      { dish: 'Chicken Rice & Curry', price: 650, qty: 2, note: '' },
+      { dish: 'Watalappan', price: 300, qty: 1, note: '' },
+    ],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 1640,
+    paymentMethod: 'card',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 2, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 2940,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Vegetable Rice & Curry', price: 550, qty: 3, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 4380,
+    paymentMethod: 'card',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [
+      { dish: 'Chicken Rice & Curry', price: 650, qty: 1, note: '' },
+      { dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 1, note: '' },
+    ],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 5820,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Chicken Rice & Curry', price: 650, qty: 3, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 7260,
+    paymentMethod: 'card',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Vegetable Rice & Curry', price: 550, qty: 2, note: '' }],
+  },
+  {
+    cook: 'bhanuka',
+    status: 'delivered',
+    minutesAgo: 8700,
+    paymentMethod: 'cash',
+    paymentStatus: 'received',
+    address: '17 Middle Street, Galle Fort',
+    landmark: 'Near the old gate',
+    items: [{ dish: 'Fish Ambul Thiyal Meal', price: 750, qty: 2, note: '' }],
+  },
 ];
 
 // Set in main() once the .env values have been checked.
@@ -566,6 +652,50 @@ async function seedCookOrders(uids: Record<string, string>): Promise<void> {
   console.log(`ok  ${SEED_COOK_ORDERS.length} sample cook orders`);
 }
 
+// Walk-in cash sales typed in by the cook (S4), so the manual entries have something to show.
+const SEED_MANUAL_SALES = [
+  { amount: 500, note: 'Walk-in lunch', minutesAgo: 45 },
+  { amount: 750, note: 'Neighbour, 2 short eats boxes', minutesAgo: 1440 + 120 },
+];
+
+/** Payments for the delivered orders and the manual sales, written by the cook (S4). */
+async function seedPayments(uids: Record<string, string>): Promise<void> {
+  const cook = SEED_USERS.find((user) => user.key === 'bhanuka');
+  if (!cook) return;
+
+  await signInOrCreate(cook);
+  let count = 0;
+  for (const [index, order] of SEED_COOK_ORDERS.entries()) {
+    if (order.status !== 'delivered') continue;
+    count += 1;
+    const total = order.items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const payment: Payment = {
+      cookId: uids.bhanuka,
+      orderId: `seed-cook-order-${index + 1}`,
+      amount: total,
+      method: order.paymentMethod,
+      status: 'received',
+      createdAt: Timestamp.fromMillis(Date.now() - order.minutesAgo * 60 * 1000),
+    };
+    await setDoc(doc(db, 'payments', `seed-payment-${count}`), payment);
+  }
+  for (const [index, sale] of SEED_MANUAL_SALES.entries()) {
+    count += 1;
+    const payment: Payment = {
+      cookId: uids.bhanuka,
+      orderId: null,
+      amount: sale.amount,
+      method: 'cash',
+      status: 'received',
+      note: sale.note,
+      createdAt: Timestamp.fromMillis(Date.now() - sale.minutesAgo * 60 * 1000),
+    };
+    await setDoc(doc(db, 'payments', `seed-manual-${index + 1}`), payment);
+  }
+  await signOut(auth);
+  console.log(`ok  ${count} sample payments`);
+}
+
 async function main(): Promise<void> {
   const missing = ['EXPO_PUBLIC_FIREBASE_API_KEY', 'EXPO_PUBLIC_FIREBASE_PROJECT_ID'].filter(
     (name) => !process.env[name],
@@ -594,6 +724,7 @@ async function main(): Promise<void> {
   await seedNotifications();
   await seedRequests(uids);
   await seedCookOrders(uids);
+  await seedPayments(uids);
   console.log(
     '\nDone. The password for every test account is SEED_PASSWORD in mobile/scripts/seed.ts.',
   );

@@ -91,7 +91,7 @@ Changing a field name affects teammates: tell the group first.
 | `alertPrefs` | `{uid}_{cookId}` | `uid`, `cookId`, `enabled` |
 | `dismissedRequests` | `{riderUid}_{orderId}` | `uid`, `orderId` |
 | `notifications` | auto | `uid`, `text`, `read`, `createdAt` |
-| `payments` | auto | `cookId`, `orderId` (null for manual entry), `amount`, `method`, `status`, `createdAt` |
+| `payments` | auto, or `cash_<orderId>` / `pay_<orderId>` | `cookId`, `orderId` (null for manual entry), `amount`, `method`, `status`, `note` (optional), `createdAt` |
 
 **Order status lifecycle:** `placed` → `accepted` → `preparing` → `ready` → `picked_up` → `delivered`. Also `declined` (cook) and `cancelled` (customer, only while `placed`).
 
@@ -126,6 +126,8 @@ Changing a field name affects teammates: tell the group first.
 | Order tabs, next step, decline reasons, order number | `tabOf`, `nextStep`, `canDecline`, `orderNumber` | `src/utils/cook-orders.ts` |
 | One order live, and a user's name and phone | `useOrder(id)`, `useUserProfile(uid)` | `src/hooks/use-order.ts`, `src/hooks/use-user-profile.ts` |
 | Cook confirms a payment (also writes the payment record) | `markPaymentReceived(order)` | `src/services/cook-orders.ts` |
+| The cook's sales: today total, 7-day bars, pending payments, manual sales | `useSales()` | `src/hooks/use-sales.ts` |
+| Day totals, chart bars, amount parsing | `dayTotal`, `lastSevenDays`, `parseSaleAmount` | `src/utils/sales.ts` |
 | Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
