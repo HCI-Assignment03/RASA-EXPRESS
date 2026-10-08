@@ -10,8 +10,8 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | FR04 | Real-time order and delivery tracking | C6, R2 | `customer/track/[orderId].tsx`, `rider/(tabs)/trip.tsx` | Fernando, Lowe | TC-R2-02, 04, 05, 12 |
 | FR05 | Multiple payment methods incl. COD | C5, S2, S4 | `customer/checkout.tsx`, `cook/order/[id].tsx`, `cook/(tabs)/sales.tsx` | Fernando, Manawadu | |
 | FR06 | Rate and review sellers, favourites | C2, C3, C7, C8 | `customer/review/[orderId].tsx`, `customer/(tabs)/favourites.tsx` | Fernando, Lowe | TC-C8-01, 02, 09 to 12 |
-| FR07 | Seller order dashboard | S1, S2 | `cook/(tabs)/orders.tsx`, `cook/order/[id].tsx` | Manawadu | |
-| FR08 | Seller updates menu availability and order status | S1, S2, S3 | `cook/(tabs)/menu.tsx` | Manawadu | TC-S3-01 to TC-S3-13 |
+| FR07 | Seller order dashboard | S1, S2 | `cook/(tabs)/orders.tsx`, `cook/order/[id].tsx` | Manawadu | TC-S1-01 to 04, 09 to 13, 15 |
+| FR08 | Seller updates menu availability and order status | S1, S2, S3 | `cook/(tabs)/menu.tsx`, `cook/(tabs)/orders.tsx` | Manawadu | TC-S1-05 to 08, 14, TC-S3-01 to TC-S3-13 |
 | FR09 | Rider GPS navigation and delivery status | R1, R2 | `rider/(tabs)/requests.tsx`, `rider/(tabs)/trip.tsx` | Lowe | TC-R1-01 to TC-R1-10, TC-R2-01 to TC-R2-13 |
 | FR10 | Daily sales reports | S4 | `cook/(tabs)/sales.tsx` | Manawadu | |
 | NFR01 | Simple, user-friendly interface | All | All | All | (SUS) |

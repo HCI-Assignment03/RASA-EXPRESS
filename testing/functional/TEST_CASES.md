@@ -64,3 +64,18 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-S3-11 | S3 | FR08 | Delete | A dish on the menu | Tap Delete, choose Delete | Dish removed from the list and from the customer's view | | | | |
 | TC-S3-12 | S3 | FR08 | Delete (cancel) | A dish on the menu | Tap Delete, choose Keep | Nothing is removed | | | | |
 | TC-S3-13 | S3 | FR08 | Read | A cook with no dishes | Open the Menu tab | Message "You have no dishes yet" with the Add dish button | | | | |
+| TC-S1-01 | S1 | FR07 | Read | Cook has orders in several statuses (seed data) | Open the Orders tab and look at each tab | Tabs New, Preparing, Ready, Past show the right orders with counts, newest first | | | | |
+| TC-S1-02 | S1 | FR07 | Read | A new order exists | Look at an order card | Order number, status badge, time, items, address with landmark, payment line and total are shown | | | | |
+| TC-S1-03 | S1 | FR07 | Read | A customer places a new order (or one is seeded) | Keep the Orders tab open | The order appears under New without refreshing | | | | |
+| TC-S1-04 | S1 | FR07 | Read | A tab has no orders | Open that tab | A message explains the tab is empty | | | | |
+| TC-S1-05 | S1 | FR08 | Update | A new order | Tap Accept order | The order moves to Preparing, the dish portions drop by the quantity ordered, the customer gets an alert | | | | |
+| TC-S1-06 | S1 | FR08 | Update | An accepted order | Tap Start preparing | The badge changes to Preparing and the customer gets an alert | | | | |
+| TC-S1-07 | S1 | FR08 | Update | A preparing order | Tap Mark as ready | The order moves to the Ready tab, appears in the rider requests, customer gets an alert | | | | |
+| TC-S1-08 | S1 | FR08 | Update | A dish with few portions left | Accept orders until the dish reaches 0 portions | The dish is marked sold out on the Menu tab and for customers | | | | |
+| TC-S1-09 | S1 | FR07 | Delete | A new order | Tap Decline, choose Sold out, confirm | The order moves to Past as Declined with the reason, customer gets an alert | | | | |
+| TC-S1-10 | S1 | FR07 | Delete (invalid) | Decline form open | Choose Other reason and tap Decline with nothing typed | Error asks for a reason, nothing declined | | | | |
+| TC-S1-11 | S1 | FR07 | Delete | An accepted order | Decline it with a reason | Portions taken at accept are put back on the menu | | | | |
+| TC-S1-12 | S1 | FR07 | Delete (cancel) | Decline form open | Tap Keep order | The order is unchanged | | | | |
+| TC-S1-13 | S1 | FR07 | Update (invalid) | A preparing order | Look at the card | No Decline button, only Mark as ready | | | | |
+| TC-S1-14 | S1 | FR07 | Update (invalid) | An order shown as New on the cook phone | The customer cancels it, then the cook taps Accept order | Message "This order has changed", the order is not accepted | | | | |
+| TC-S1-15 | S1 | FR07 | Read | An order card | Tap the card | The order detail screen (S2) opens | | | | |
