@@ -51,3 +51,16 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-R2-11 | R2 | FR09 | Update | Order paid online | Mark as picked up, then look at the buttons | Goes straight to Mark as delivered with no cash step | | | | |
 | TC-R2-12 | R2 | FR04 | Read | No internet | Open an active trip | Map area explains it could not load. Address, landmark and Navigate still work | | | | |
 | TC-R2-13 | R2 | FR09 | Read | Rider accepted two requests | Open Active trip | The older trip is shown, with "1 more trip is waiting". After delivering it, the next one appears | | | | |
+| TC-S3-01 | S3 | FR08 | Read | Signed in as a cook with dishes | Open the Menu tab | Heading shows "N dishes, M on sale today" and one card per dish, sold-out dishes last | | | | |
+| TC-S3-02 | S3 | FR08 | Create | On the Menu tab | Tap Add dish, fill every field correctly, tap Save dish | Toast "Dish added", the dish appears in the list and on the customer's cook page | | | | |
+| TC-S3-03 | S3 | FR08 | Create (invalid) | Add dish form open | Tap Save dish with the form empty | Errors under name, price, portions and ingredients, nothing saved | | | | |
+| TC-S3-04 | S3 | FR08 | Create (invalid) | Add dish form open | Enter price 12.5, portions 2.5 and nutrition "abc" | Each field shows its own error, nothing saved | | | | |
+| TC-S3-05 | S3 | FR08 | Update | A dish is on sale | Turn the On sale today switch off | Dish shows Sold out, customers see it as sold out | | | | |
+| TC-S3-06 | S3 | FR08 | Update | A dish with portions | Press + and − on the portion stepper | The number changes each press and customers see the same count | | | | |
+| TC-S3-07 | S3 | FR08 | Update | A dish with 1 portion | Press − to reach 0 | Dish becomes Sold out and its switch turns off. Pressing + puts it back on sale | | | | |
+| TC-S3-08 | S3 | FR08 | Update (invalid) | A dish with 0 portions | Turn its switch on | Message "Add some portions first", the switch stays off | | | | |
+| TC-S3-09 | S3 | FR08 | Update | A dish on the menu | Tap Edit, change the price, save | The new price shows on the card and for customers | | | | |
+| TC-S3-10 | S3 | FR08 | Update | A dish switched off by the cook, with portions | Tap Edit, change the name, save | The dish stays switched off | | | | |
+| TC-S3-11 | S3 | FR08 | Delete | A dish on the menu | Tap Delete, choose Delete | Dish removed from the list and from the customer's view | | | | |
+| TC-S3-12 | S3 | FR08 | Delete (cancel) | A dish on the menu | Tap Delete, choose Keep | Nothing is removed | | | | |
+| TC-S3-13 | S3 | FR08 | Read | A cook with no dishes | Open the Menu tab | Message "You have no dishes yet" with the Add dish button | | | | |
