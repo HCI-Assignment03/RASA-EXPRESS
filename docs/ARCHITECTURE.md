@@ -130,6 +130,9 @@ Changing a field name affects teammates: tell the group first.
 | Day totals, chart bars, amount parsing | `dayTotal`, `lastSevenDays`, `parseSaleAmount` | `src/utils/sales.ts` |
 | Place an order from the cart (checks stock, empties the cart), cancel while placed | `placeOrder`, `cancelOrder` | `src/services/orders.ts` |
 | Checkout rules: schedule options, cut-off, form check, payment options | `scheduleOptions`, `validateCheckout`, `PAYMENT_OPTIONS` | `src/utils/checkout.ts` |
+| The customer's orders, active and past, live | `useMyOrders()` | `src/hooks/use-my-orders.ts` |
+| One order's chat, live, and sending a message | `useChat(orderId)` | `src/hooks/use-chat.ts` |
+| Progress step, customer wording of a status, ETA text, can cancel / chat / review | `progressIndex`, `customerStatus`, `etaText`, `canCancel`, `canChat`, `canReview` | `src/utils/tracking.ts` |
 | Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
