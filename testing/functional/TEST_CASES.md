@@ -107,3 +107,21 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-S4-11 | S4 | FR10 | Delete (cancel) | A manual sale exists | Tap its trash button and choose Keep | Nothing is removed | | | | |
 | TC-S4-12 | S4 | FR10 | Delete (invalid) | A payment for an order exists | Look at its row | It has no delete button | | | | |
 | TC-S4-13 | S4 | FR10 | Read | No network | Open the Sales tab | Error message with a Try again button | | | | |
+| TC-C5-01 | C5 | FR03 | Read | Cart has two dishes from one cook | Tap View cart on the cook page | Checkout shows both dishes with line prices, notes and the correct total | | | | |
+| TC-C5-02 | C5 | FR03 | Read | Cart is empty | Open checkout | Message "Your cart is empty" with a Find cooks button | | | | |
+| TC-C5-03 | C5 | FR03 | Update | Cart has a dish | Press + until it stops, then press − | Quantity never goes above the portions left, and the total follows | | | | |
+| TC-C5-04 | C5 | FR03 | Delete | A dish with quantity 1 | Press the trash button on its stepper | The dish is removed from the cart and the total drops | | | | |
+| TC-C5-05 | C5 | FR03 | Delete | Cart has dishes | Tap Clear and choose Clear | Cart is emptied and the empty message shows. Choosing Keep changes nothing | | | | |
+| TC-C5-06 | C5 | FR03 | Create (invalid) | Checkout open | Tap Place order with the address empty | Address error, no order created | | | | |
+| TC-C5-07 | C5 | FR03 | Create (invalid) | Checkout open | Enter a 3 character address and place the order | Address error asks for a street address | | | | |
+| TC-C5-08 | C5 | FR03 | Create (invalid) | Checkout open | Choose Tomorrow, pick no time slot, place the order | Error "Pick a delivery time", no order created | | | | |
+| TC-C5-09 | C5 | FR03 | Update | Cook takes pre-orders | Choose Later today or Tomorrow | Half-hour time slots from 11:00 AM to 8:00 PM appear and one can be selected | | | | |
+| TC-C5-10 | C5 | FR03 | Update (invalid) | After the cook's cut-off time | Look at Later today | It is switched off with the reason "Same-day pre-orders closed at ..." | | | | |
+| TC-C5-11 | C5 | FR03 | Update (invalid) | A cook who does not take pre-orders | Look at Later today and Tomorrow | Both are switched off with the reason, only ASAP can be chosen | | | | |
+| TC-C5-12 | C5 | FR05 | Update | Checkout open | Choose each of Cash, Card, Bank transfer and Mobile wallet | The chosen method is highlighted and its hint is shown | | | | |
+| TC-C5-13 | C5 | FR03 | Create | Valid cart, address and landmark entered | Choose ASAP and Cash, tap Place order | Toast "Order placed", the tracking screen opens, the cart is empty | | | | |
+| TC-C5-14 | C5 | FR03, FR07 | Create | Order placed (TC-C5-13) | Sign in as the cook and open Orders, New | The order is there with address, landmark, items, notes, total and payment | | | | |
+| TC-C5-15 | C5 | FR05 | Create | Payment method Card | Place the order, open it as the cook | Payment shows Card, to collect, and the cook can Mark payment received | | | | |
+| TC-C5-16 | C5 | FR03 | Create (invalid) | Cart has 3 of a dish | The cook sets that dish to 1 portion, then the customer taps Place order | Red box "Only 1 of ... left", no order is created, the cart is kept | | | | |
+| TC-C5-17 | C5 | FR03 | Create (invalid) | Cart has a dish | The cook switches the dish off, then the customer taps Place order | Red box says the dish is sold out, no order is created | | | | |
+| TC-C5-18 | C5 | FR03 | Create (invalid) | No network | Tap Place order | Error toast, no order created, the cart is kept | | | | |
