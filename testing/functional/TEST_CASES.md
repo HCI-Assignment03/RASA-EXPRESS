@@ -79,3 +79,18 @@ Result: Pass / Fail / Blocked. If Fail, add the defect to the issue log with a f
 | TC-S1-13 | S1 | FR07 | Update (invalid) | A preparing order | Look at the card | No Decline button, only Mark as ready | | | | |
 | TC-S1-14 | S1 | FR07 | Update (invalid) | An order shown as New on the cook phone | The customer cancels it, then the cook taps Accept order | Message "This order has changed", the order is not accepted | | | | |
 | TC-S1-15 | S1 | FR07 | Read | An order card | Tap the card | The order detail screen (S2) opens | | | | |
+| TC-S2-01 | S2 | FR07 | Read | Cook has orders | On the Orders tab, tap an order card | Detail screen opens with the order number, status badge and how long ago it was ordered | | | | |
+| TC-S2-02 | S2 | FR07 | Read | Order detail open | Look at the Customer card | Customer name and phone number are shown | | | | |
+| TC-S2-03 | S2 | FR07 | Read | Customer card shown | Tap the phone number | The phone dialler opens with that number | | | | |
+| TC-S2-04 | S2 | FR07 | Read | An order with items and a note | Look at the Items and Delivery cards | Each item shows quantity, name, line price and the note. The total, address, landmark and schedule are correct | | | | |
+| TC-S2-05 | S2 | FR05 | Read | A card order with pending payment | Look at the Payment card | Shows the method with "to collect" and a Pending badge | | | | |
+| TC-S2-06 | S2 | FR05 | Update | A card order with pending payment | Tap Mark payment received | Toast, badge turns Paid, the button disappears, a `pay_<orderId>` payment exists in Firebase | | | | |
+| TC-S2-07 | S2 | FR05 | Update (invalid) | An order already paid | Look at the Payment card | There is no Mark payment received button | | | | |
+| TC-S2-08 | S2 | FR05 | Update (invalid) | A declined order with pending payment | Open it | There is no Mark payment received button | | | | |
+| TC-S2-09 | S2 | FR08 | Update | A new order | Tap Accept order, then Start preparing, then Mark as ready | The badge changes live after each tap, the customer gets an alert each time | | | | |
+| TC-S2-10 | S2 | FR08 | Update | A ready order | Look at the action buttons | No action buttons are shown | | | | |
+| TC-S2-11 | S2 | FR07 | Delete | A new order | Tap Decline order, choose a reason, confirm | Detail shows Declined with the reason, customer gets an alert | | | | |
+| TC-S2-12 | S2 | FR07 | Delete (invalid) | Decline form open | Choose Other reason, leave it empty, tap Decline | Error asks for a reason, order not declined | | | | |
+| TC-S2-13 | S2 | FR09 | Read | A rider has accepted the order | Open the order | The Delivery card shows "Rider: <name>" | | | | |
+| TC-S2-14 | S2 | FR07 | Read | An order id that does not exist | Open the order screen with a wrong id | Message "This order could not be found" with Go back | | | | |
+| TC-S2-15 | S2 | FR07 | Read | No network | Open an order | Error message with a Try again button | | | | |

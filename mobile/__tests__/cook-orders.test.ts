@@ -2,6 +2,7 @@ import type { Order, OrderStatus, WithId } from '../src/types';
 import {
   STATUS_LABEL,
   canDecline,
+  canMarkPaid,
   countByTab,
   itemsSummary,
   newestFirst,
@@ -118,5 +119,29 @@ describe('newestFirst', () => {
     const list = [at('old', 1000), at('new', 3000), at('mid', 2000)];
     expect(newestFirst(list).map((order) => order.id)).toEqual(['new', 'mid', 'old']);
     expect(list.map((order) => order.id)).toEqual(['old', 'new', 'mid']);
+  });
+});
+
+describe('canMarkPaid', () => {
+  it('allows confirming a pending payment on an order that is still alive', () => {
+    for (const status of [
+      'placed',
+      'accepted',
+      'preparing',
+      'ready',
+      'picked_up',
+      'delivered',
+    ] as const) {
+      expect(canMarkPaid({ status, paymentStatus: 'pending' })).toBe(true);
+    }
+  });
+
+  it('does not allow it twice', () => {
+    expect(canMarkPaid({ status: 'delivered', paymentStatus: 'received' })).toBe(false);
+  });
+
+  it('does not allow it on a declined or cancelled order', () => {
+    expect(canMarkPaid({ status: 'declined', paymentStatus: 'pending' })).toBe(false);
+    expect(canMarkPaid({ status: 'cancelled', paymentStatus: 'pending' })).toBe(false);
   });
 });
