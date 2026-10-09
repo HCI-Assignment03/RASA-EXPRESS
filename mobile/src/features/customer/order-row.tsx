@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, fontSize, radius, spacing, type Tone } from '@/constants/theme';
+import { colors, fontSize, radius, shadow, spacing, type Tone } from '@/constants/theme';
 import type { Order, Review, WithId } from '@/types';
 import { STATUS_TONE, itemsSummary, orderNumber } from '@/utils/cook-orders';
 import { formatPrice, formatTimeAgo } from '@/utils/format';
@@ -64,8 +64,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.lg,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadow.card,
     backgroundColor: colors.surface,
   },
   pressed: { opacity: 0.85 },

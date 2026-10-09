@@ -1,17 +1,18 @@
 import { Tabs } from 'expo-router';
 
-import { tabIcon, tabScreenOptions } from '@/components/tab-options';
+import { tabIcon, useTabScreenOptions } from '@/components/tab-options';
 import { useOpenRequests } from '@/hooks/use-open-requests';
 import { useTrips } from '@/hooks/use-trips';
 
 export default function RiderTabsLayout() {
+  const screenOptions = useTabScreenOptions();
   // Open requests and unfinished trips show as badges, so the rider sees new work on any tab.
   const { requests } = useOpenRequests();
   const { trip, waiting } = useTrips();
   const trips = trip ? waiting + 1 : 0;
 
   return (
-    <Tabs screenOptions={tabScreenOptions}>
+    <Tabs screenOptions={screenOptions}>
       <Tabs.Screen
         name="requests"
         options={{

@@ -3,10 +3,11 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
+import { FoodPlate } from '@/components/food-plate';
 import { Screen } from '@/components/screen';
 import { TextField } from '@/components/text-field';
 import { useToast } from '@/components/toast';
-import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { LanguageChips } from '@/features/auth/language-chips';
 import { RoleTiles } from '@/features/auth/role-tiles';
@@ -90,11 +91,18 @@ export default function SignInScreen() {
   return (
     <Screen scroll edges={['top', 'bottom']}>
       <View style={styles.hero}>
-        <View style={styles.logo}>
-          <Ionicons name="restaurant" size={44} color={colors.onPrimary} />
+        <View style={[styles.circle, styles.circleBig]} />
+        <View style={[styles.circle, styles.circleSmall]} />
+        <View style={styles.plateRing}>
+          <FoodPlate size={84} />
         </View>
         <Text style={styles.brand}>RASA EXPRESS</Text>
         <Text style={styles.tagline}>Home-cooked meals from trusted cooks near you</Text>
+        <View style={styles.highlights}>
+          <Highlight icon="shield-checkmark" label="Verified cooks" />
+          <Highlight icon="navigate" label="Live tracking" />
+          <Highlight icon="cash" label="Cash on delivery" />
+        </View>
       </View>
 
       <View style={styles.modeSwitch} accessibilityRole="tablist">
@@ -205,6 +213,21 @@ export default function SignInScreen() {
   );
 }
 
+function Highlight({
+  icon,
+  label,
+}: {
+  icon: 'shield-checkmark' | 'navigate' | 'cash';
+  label: string;
+}) {
+  return (
+    <View style={styles.highlight}>
+      <Ionicons name={icon} size={14} color={colors.onPrimary} />
+      <Text style={styles.highlightText}>{label}</Text>
+    </View>
+  );
+}
+
 function ModeTab({
   label,
   selected,
@@ -227,22 +250,49 @@ function ModeTab({
 }
 
 const styles = StyleSheet.create({
-  hero: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.lg },
-  logo: {
-    width: 88,
-    height: 88,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
+  hero: {
+    overflow: 'hidden',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.xl,
+    backgroundColor: colors.primary,
+    ...shadow.raised,
+  },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: colors.onPrimaryFaint },
+  circleBig: { width: 220, height: 220, top: -90, right: -70 },
+  circleSmall: { width: 140, height: 140, bottom: -60, left: -50 },
+  plateRing: {
+    padding: spacing.sm,
+    marginBottom: spacing.xs,
+    borderRadius: 999,
+    backgroundColor: colors.onPrimarySoft,
   },
   brand: {
-    fontSize: fontSize.title,
+    fontSize: fontSize.heading,
     fontWeight: '800',
-    letterSpacing: 1,
-    color: colors.primaryDark,
+    letterSpacing: 2,
+    color: colors.onPrimary,
   },
-  tagline: { fontSize: fontSize.body, color: colors.textMuted, textAlign: 'center' },
+  tagline: { fontSize: fontSize.body, color: colors.onPrimary, opacity: 0.92, textAlign: 'center' },
+  highlights: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+  },
+  highlight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.pill,
+    backgroundColor: colors.onPrimarySoft,
+  },
+  highlightText: { fontSize: fontSize.caption, fontWeight: '700', color: colors.onPrimary },
   modeSwitch: {
     flexDirection: 'row',
     padding: spacing.xs,

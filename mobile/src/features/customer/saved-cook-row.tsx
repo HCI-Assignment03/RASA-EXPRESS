@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { FoodPlate } from '@/components/food-plate';
-import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constants/theme';
 import type { Cook, WithId } from '@/types';
 
 type Props = {
@@ -75,8 +75,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.md,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadow.card,
     backgroundColor: colors.surface,
   },
   top: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },

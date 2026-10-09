@@ -1,14 +1,15 @@
 import { Tabs } from 'expo-router';
 
-import { tabIcon, tabScreenOptions } from '@/components/tab-options';
+import { tabIcon, useTabScreenOptions } from '@/components/tab-options';
 import { useCookOrders } from '@/hooks/use-cook-orders';
 
 export default function CookTabsLayout() {
+  const screenOptions = useTabScreenOptions();
   // New orders waiting for the cook to accept them show as a badge, on every tab (NFR08).
   const { counts } = useCookOrders();
 
   return (
-    <Tabs screenOptions={tabScreenOptions}>
+    <Tabs screenOptions={screenOptions}>
       <Tabs.Screen
         name="orders"
         options={{

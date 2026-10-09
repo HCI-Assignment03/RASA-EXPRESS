@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Badge } from '@/components/badge';
 import { FoodPlate } from '@/components/food-plate';
 import { QuantityStepper } from '@/components/quantity-stepper';
-import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, radius, shadow, spacing } from '@/constants/theme';
 import type { Dish, WithId } from '@/types';
 import { isSoldOut } from '@/utils/dish';
 import { formatPrice } from '@/utils/format';
@@ -73,8 +73,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.md,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadow.card,
     backgroundColor: colors.surface,
   },
   soldOut: { opacity: 0.6 },

@@ -14,8 +14,8 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | FR08 | Seller updates menu availability and order status | S1, S2, S3 | `cook/(tabs)/menu.tsx`, `cook/(tabs)/orders.tsx`, `cook/order/[id].tsx` | Manawadu | TC-S1-05 to 08, 14, TC-S2-09, 10, TC-S3-01 to TC-S3-14 |
 | FR09 | Rider GPS navigation and delivery status | R1, R2 | `rider/(tabs)/requests.tsx`, `rider/(tabs)/trip.tsx` | Lowe | TC-R1-01 to TC-R1-10, TC-R2-01 to TC-R2-14, TC-INT-01 |
 | FR10 | Daily sales reports | S4 | `cook/(tabs)/sales.tsx` | Manawadu | TC-S4-01 to 07, 10 to 13 |
-| NFR01 | Simple, user-friendly interface | All | All | All | (SUS) |
-| NFR02 | Secure authentication | C1 | `(auth)/sign-in.tsx` | Kulathunga | TC-C1-01 to 13 |
+| NFR01 | Simple, user-friendly interface | All | All | All | (SUS), TC-C1-16 to 19 |
+| NFR02 | Secure authentication | C1 | `(auth)/sign-in.tsx` | Kulathunga | TC-C1-01 to 13, 20 |
 | NFR03 | Secure online payment | C5 | `customer/checkout.tsx` | Fernando | |
 | NFR04 | Reasonable response time | All | All | All | |
 | NFR05 | Android and iOS | All | All | All | TC-INT-04 (APK), Expo Go on iPhone and Android |

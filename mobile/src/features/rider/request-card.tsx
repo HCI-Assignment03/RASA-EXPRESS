@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, radius, shadow, spacing } from '@/constants/theme';
 import type { Cook, Order, WithId } from '@/types';
 import { formatDistance, riderFee } from '@/utils/delivery';
 import { formatPrice } from '@/utils/format';
@@ -111,8 +111,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.lg,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadow.card,
     backgroundColor: colors.surface,
   },
   header: {

@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge } from '@/components/badge';
 import { FoodPlate } from '@/components/food-plate';
-import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constants/theme';
 import type { Cook, WithId } from '@/types';
 
 type Props = {
@@ -86,8 +86,7 @@ const styles = StyleSheet.create({
   card: {
     overflow: 'hidden',
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadow.card,
     backgroundColor: colors.surface,
   },
   pressed: { opacity: 0.9 },

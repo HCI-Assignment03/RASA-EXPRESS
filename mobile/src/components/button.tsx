@@ -9,7 +9,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, radius, shadow, spacing } from '@/constants/theme';
 
 type Variant = 'primary' | 'secondary' | 'success' | 'danger' | 'ghost';
 
@@ -23,12 +23,18 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-const VARIANTS: Record<Variant, { bg: string; fg: string; border: string }> = {
-  primary: { bg: colors.primary, fg: colors.onPrimary, border: colors.primary },
-  secondary: { bg: colors.surface, fg: colors.primary, border: colors.primary },
-  success: { bg: colors.success, fg: colors.onPrimary, border: colors.success },
-  danger: { bg: colors.surface, fg: colors.danger, border: colors.danger },
-  ghost: { bg: 'transparent', fg: colors.text, border: colors.border },
+// Filled buttons carry a soft glow so the main action of a screen stands out; the others are tinted.
+const VARIANTS: Record<Variant, { bg: string; fg: string; border: string; raised: boolean }> = {
+  primary: { bg: colors.primary, fg: colors.onPrimary, border: colors.primary, raised: true },
+  secondary: {
+    bg: colors.primarySoft,
+    fg: colors.primaryDark,
+    border: colors.primarySoft,
+    raised: false,
+  },
+  success: { bg: colors.success, fg: colors.onPrimary, border: colors.success, raised: true },
+  danger: { bg: colors.dangerSoft, fg: colors.danger, border: colors.dangerSoft, raised: false },
+  ghost: { bg: 'transparent', fg: colors.text, border: colors.border, raised: false },
 };
 
 export function Button({
@@ -52,10 +58,14 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
+        palette.raised &&
+          !inactive &&
+          (variant === 'success' ? styles.raisedSuccess : styles.raised),
         {
           backgroundColor: palette.bg,
           borderColor: palette.border,
-          opacity: inactive ? 0.5 : pressed ? 0.85 : 1,
+          opacity: inactive ? 0.5 : pressed ? 0.9 : 1,
+          transform: [{ scale: pressed && !inactive ? 0.98 : 1 }],
         },
         style,
       ]}
@@ -74,8 +84,8 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 48,
-    borderRadius: radius.md,
+    minHeight: 52,
+    borderRadius: radius.md + 2,
     borderWidth: 1,
     paddingHorizontal: spacing.lg,
     flexDirection: 'row',
@@ -83,5 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.sm,
   },
-  label: { fontSize: fontSize.body, fontWeight: '600' },
+  raised: { ...shadow.raised },
+  raisedSuccess: { boxShadow: '0px 8px 20px rgba(46, 158, 91, 0.25)' },
+  label: { fontSize: fontSize.body, fontWeight: '700' },
 });

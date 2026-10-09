@@ -38,7 +38,7 @@ mobile/
     │   └── rider/            R1 R2
     │       └── (tabs)/       Bottom tabs: requests, trip, profile
     ├── components/           Shared UI: Button, Card, Badge, StarRating, TextField, Screen, Toast,
-    │                         AccountPanel (Profile / More tabs), OfflineBanner
+    │                         AccountPanel (Profile / More tabs), OfflineBanner, tab-options
     ├── constants/            theme.ts (colours, spacing, font sizes)
     ├── context/              AuthContext (the cart is a Firestore document, see useCart)
     ├── features/             Per-member helpers (customer/, cook/, rider/)
@@ -71,7 +71,7 @@ Screen to file mapping (URL in the last column):
 | R1 | `src/app/rider/(tabs)/requests.tsx` | `/rider/requests` |
 | R2 | `src/app/rider/(tabs)/trip.tsx` | `/rider/trip` |
 
-The Profile / More tabs (`customer/(tabs)/profile.tsx`, `cook/(tabs)/more.tsx`, `rider/(tabs)/profile.tsx`) show `AccountPanel`: edit profile, sign out, delete account (C1). For a cook it also shows the kitchen details (the cook page customers see) with an edit form.
+The Profile / More tabs (`customer/(tabs)/profile.tsx`, `cook/(tabs)/more.tsx`, `rider/(tabs)/profile.tsx`) show `AccountPanel`: an orange profile header, the role's own sections passed in as children (numbers at a glance and shortcuts, from `features/account/`), then edit profile, sign out and delete account (C1). The cook's More tab also shows the kitchen card with the Kitchen details form.
 
 Navigate with `router.push('/customer/cook/abc')` (import `router` from `expo-router`). Route paths are type-checked using types that `npx expo start` generates, so start the dev server once before running `npx tsc --noEmit`.
 
@@ -144,6 +144,11 @@ Changing a field name affects teammates: tell the group first.
 | The order chat box, customer side (C6) or rider side (R2) | `ChatBox` with `otherRole` | `src/features/customer/chat-box.tsx` |
 | A cook edits their cook page | `updateKitchen`, `validateKitchenForm`, `KitchenForm` | `src/services/cooks.ts`, `src/utils/kitchen.ts`, `src/features/auth/kitchen-form.tsx` |
 | Offline strip above every screen | `OfflineBanner` | `src/components/offline-banner.tsx` |
+| Card shadows, the orange glow of main buttons | `shadow.card`, `shadow.raised` | `src/constants/theme.ts` |
+| Bottom tab bar look (orange pill on the selected tab) | `useTabScreenOptions()`, `tabIcon()` | `src/components/tab-options.tsx` |
+| Profile header, number tiles, settings-style link rows, kitchen card | `ProfileHero`, `StatTiles`, `LinkList`, `KitchenCard` | `src/features/account/` |
+| The rider's deliveries and earnings today | `useRiderStats()`, `riderStats` | `src/hooks/use-rider-stats.ts`, `src/utils/rider-stats.ts` |
+| Avatar initials, "Good morning" | `initials(name)`, `greeting()` | `src/utils/format.ts` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
 | Money, dates, mobile numbers | `formatPrice`, `formatDate`, `formatMobile` | `src/utils/format.ts` |

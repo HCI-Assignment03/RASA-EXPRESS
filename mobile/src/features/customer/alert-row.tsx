@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constants/theme';
 import type { AppNotification, WithId } from '@/types';
 import { formatTimeAgo } from '@/utils/format';
 
@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: 'transparent',
+    ...shadow.card,
     backgroundColor: colors.surface,
   },
   unread: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
