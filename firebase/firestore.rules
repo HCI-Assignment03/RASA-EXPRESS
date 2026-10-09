@@ -77,7 +77,10 @@ service cloud.firestore {
     }
 
     match /alertPrefs/{prefId} {
-      allow read, update: if signedIn() && resource.data.uid == request.auth.uid;
+      // A cook may read the preferences about them, to send "new dish" alerts to those customers.
+      allow read: if signedIn() &&
+        (resource.data.uid == request.auth.uid || resource.data.cookId == request.auth.uid);
+      allow update: if signedIn() && resource.data.uid == request.auth.uid;
       // Checked by id because removing a saved cook also deletes its alert preference, which
       // may not exist. A missing document has no resource.data to check.
       allow delete: if signedIn() && prefId.matches(request.auth.uid + '_.*');

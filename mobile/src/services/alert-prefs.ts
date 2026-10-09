@@ -1,6 +1,8 @@
 import {
   collection,
   doc,
+  getDoc,
+  getDocs,
   onSnapshot,
   query,
   setDoc,
@@ -9,9 +11,11 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore';
 
-import type { AlertPreference, WithId } from '@/types';
+import type { AlertPreference, Cook, WithId } from '@/types';
+import { menuAlertText, type MenuChange } from '@/utils/menu-alerts';
 
 import { db } from './firebase';
+import { createNotifications } from './notifications';
 
 // One document per saved cook, with a predictable id (same idea as favourites).
 const prefRef = (uid: string, cookId: string) => doc(db, 'alertPrefs', `${uid}_${cookId}`);
@@ -43,4 +47,28 @@ export async function setAlertEnabled(
   enabled: boolean,
 ): Promise<void> {
   await updateDoc(prefRef(uid, cookId), { enabled });
+}
+
+/**
+ * Create: tell every customer who switched alerts on for this cook about a menu change (S3 calls
+ * this when a dish is added or back on sale). The rules let a cook read the preferences about them.
+ */
+export async function notifyFollowers(
+  cookId: string,
+  change: MenuChange,
+  dishName: string,
+): Promise<void> {
+  const prefs = await getDocs(
+    query(
+      collection(db, 'alertPrefs'),
+      where('cookId', '==', cookId),
+      where('enabled', '==', true),
+    ),
+  );
+  if (prefs.empty) return;
+
+  const cook = await getDoc(doc(db, 'cooks', cookId));
+  const cookName = (cook.data() as Cook | undefined)?.displayName ?? 'A cook you saved';
+  const uids = prefs.docs.map((pref) => (pref.data() as AlertPreference).uid);
+  await createNotifications(uids, menuAlertText(change, cookName, dishName));
 }

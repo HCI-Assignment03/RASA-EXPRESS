@@ -41,6 +41,21 @@ export async function createNotification(uid: string, text: string): Promise<voi
   await addDoc(collection(db, 'notifications'), notification);
 }
 
+/** Create: the same alert for several customers, in one batch. */
+export async function createNotifications(uids: string[], text: string): Promise<void> {
+  if (uids.length === 0) return;
+  const batch = writeBatch(db);
+  uids.forEach((uid) =>
+    batch.set(doc(collection(db, 'notifications')), {
+      uid,
+      text,
+      read: false,
+      createdAt: serverTimestamp(),
+    }),
+  );
+  await batch.commit();
+}
+
 /** Update: mark one alert read (or unread). */
 export async function setNotificationRead(id: string, read: boolean): Promise<void> {
   await updateDoc(doc(db, 'notifications', id), { read });

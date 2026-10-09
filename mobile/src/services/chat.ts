@@ -35,7 +35,7 @@ export function subscribeToMessages(
   );
 }
 
-/** Create (C6): send a message. */
+/** Create (C6 customer, R2 rider): send a message. */
 export async function sendMessage(orderId: string, senderId: string, text: string): Promise<void> {
   await addDoc(messagesRef(orderId), {
     senderId,

@@ -10,10 +10,10 @@ Source material for the report sections "Tech stack selection and justification"
 | Navigation | **Expo Router** (file-based) | Each role gets its own route folder: `customer/`, `cook/`, `rider/`. Members edit separate folders, so merge conflicts are rare. |
 | Backend / database | **Firebase Firestore** | One order is shared by three roles. Firestore's real-time listeners (`onSnapshot`) deliver FR04, FR07 and NFR08 without writing a server. NoSQL documents fit orders and menus. Built-in offline cache helps issue U10 (poor connection). Free tier is enough. |
 | Authentication | **Firebase Authentication** | NFR02: secure sign-in with hashed passwords handled by Google, not by us. Role is stored on the user document. |
-| Maps / location | `react-native-maps`, `expo-location` | C6 and R2 show the rider on a map (FR04, FR09). |
-| Notifications | In-app toasts driven by Firestore listeners; `expo-notifications` for local alerts | NFR08. Remote push needs a standalone build, so listeners are the main path. |
+| Maps / location | Leaflet + OpenStreetMap in `react-native-webview`, `expo-location` | C6 and R2 show the rider on a map (FR04, FR09). No API key or billing account, and it looks the same in Expo Go and the APK (deviation D04). |
+| Notifications | In-app alerts (`notifications` collection), toasts and tab badges, all driven by Firestore listeners; `expo-network` for the offline strip | NFR08. Remote push needs a standalone build and a push service, so listeners are the path we use. |
 | Payments | Simulated payment flow with test data | NFR03/FR05: cash on delivery is real (83.4% preference). Card/online banking are simulated, because a live gateway is out of scope. Logged in `docs/DEVIATIONS.md`. |
-| Build | EAS Build (APK) | Assignment requires an installable build. |
+| Build | EAS Build (APK, `preview` profile in `mobile/eas.json`) | Assignment requires an installable build. |
 | Testing | Jest + `jest-expo`, manual test log, SUS/SEQ usability sessions | Functional and usability testing required by Milestone 03. |
 
 Alternatives considered: Flutter (new language for everyone), native Android (no iOS), a custom Node + MongoDB API (needs hosting, no free real-time sync, more work than the schedule allows).
@@ -37,9 +37,10 @@ mobile/
     │   │   └── order/        S2 detail screen
     │   └── rider/            R1 R2
     │       └── (tabs)/       Bottom tabs: requests, trip, profile
-    ├── components/           Shared UI: Button, Card, Badge, StarRating, TextField, Screen, Toast
+    ├── components/           Shared UI: Button, Card, Badge, StarRating, TextField, Screen, Toast,
+    │                         AccountPanel (Profile / More tabs), OfflineBanner
     ├── constants/            theme.ts (colours, spacing, font sizes)
-    ├── context/              AuthContext (CartContext to be added)
+    ├── context/              AuthContext (the cart is a Firestore document, see useCart)
     ├── features/             Per-member helpers (customer/, cook/, rider/)
     ├── hooks/                useOrder, useDishes, useCook...
     ├── services/             firebase.ts, users.ts + one file per collection (orders.ts, dishes.ts...)
@@ -49,7 +50,7 @@ mobile/
 
 Rules: screens call **services**; services talk to Firestore; screens never call Firestore directly. This keeps CRUD logic testable and easy to explain in the viva.
 
-**How routing works.** The root layout wraps the app in `AuthProvider` and `ToastProvider`. `Stack.Protected` only lets a signed-in user into the folder of their own role, and sends everyone else back to `/`, which redirects. The tab layouts match the bottom navigation in the Milestone 02 prototype. Every interface already has a placeholder screen file: the owner **replaces the whole file** (and drops the `PlaceholderScreen` import).
+**How routing works.** The root layout wraps the app in `AuthProvider` and `ToastProvider`. `Stack.Protected` only lets a signed-in user into the folder of their own role, and sends everyone else back to `/`, which redirects. The tab layouts match the bottom navigation in the Milestone 02 prototype and show live number badges (D13). Every interface started as a placeholder screen that its owner replaced; all 14 are built and the placeholder component has been removed. An `OfflineBanner` sits above every screen.
 
 Screen to file mapping (URL in the last column):
 
@@ -70,7 +71,7 @@ Screen to file mapping (URL in the last column):
 | R1 | `src/app/rider/(tabs)/requests.tsx` | `/rider/requests` |
 | R2 | `src/app/rider/(tabs)/trip.tsx` | `/rider/trip` |
 
-The Profile / More tabs (`customer/(tabs)/profile.tsx`, `cook/(tabs)/more.tsx`, `rider/(tabs)/profile.tsx`) show `AccountPanel` with Sign out. C1's owner extends it (edit profile, delete account).
+The Profile / More tabs (`customer/(tabs)/profile.tsx`, `cook/(tabs)/more.tsx`, `rider/(tabs)/profile.tsx`) show `AccountPanel`: edit profile, sign out, delete account (C1). For a cook it also shows the kitchen details (the cook page customers see) with an edit form.
 
 Navigate with `router.push('/customer/cook/abc')` (import `router` from `expo-router`). Route paths are type-checked using types that `npx expo start` generates, so start the dev server once before running `npx tsc --noEmit`.
 
@@ -88,7 +89,7 @@ Changing a field name affects teammates: tell the group first.
 | `orders/{id}/messages` | auto | `senderId`, `text`, `createdAt` |
 | `reviews` | auto | `orderId`, `cookId`, `customerId`, `food`, `hygiene`, `delivery`, `comment`, `tags[]`, `createdAt` |
 | `favourites` | `{uid}_{cookId}` | `uid`, `cookId` |
-| `alertPrefs` | `{uid}_{cookId}` | `uid`, `cookId`, `enabled` |
+| `alertPrefs` | `{uid}_{cookId}` | `uid`, `cookId`, `enabled`. The cook may read the ones about them, to send menu alerts |
 | `dismissedRequests` | `{riderUid}_{orderId}` | `uid`, `orderId` |
 | `notifications` | auto | `uid`, `text`, `read`, `createdAt` |
 | `payments` | auto, or `cash_<orderId>` / `pay_<orderId>` | `cookId`, `orderId` (null for manual entry), `amount`, `method`, `status`, `note` (optional), `createdAt` |
@@ -100,7 +101,8 @@ Changing a field name affects teammates: tell the group first.
 ## 4. Known risks
 
 - **Time:** deadline is 09.10.2026. Foundation first, then screens, test early (see `docs/PLAN.md`).
-- **Maps in the APK** need a Google Maps key (see `docs/LEAD_SETUP.md`). Fallback: a drawn route.
+- **Maps in the APK:** resolved. OpenStreetMap needs no key (D04).
+- **APK build settings:** `mobile/.env` is not in git, so the six Firebase values must be added to the EAS `preview` environment before building (see `docs/LEAD_SETUP.md`).
 - **Security rules** in `firebase/firestore.rules` let users pick their own role at sign-up. That is acceptable for coursework; state it as a limitation in the report.
 - **One shared Firebase project:** everyone writes to the same data. Use clearly named test data and do not delete other people's documents.
 
@@ -136,7 +138,12 @@ Changing a field name affects teammates: tell the group first.
 | One order's review, create / edit / delete (updates the cook rating) | `useReview(orderId)` | `src/hooks/use-review.ts` |
 | Which of my orders are rated | `useMyReviews()` | `src/hooks/use-my-reviews.ts` |
 | Review form check, tags, running cook rating | `validateReview`, `REVIEW_TAGS`, `ratingAfterAdd/Edit/Remove` | `src/utils/reviews.ts` |
-| Send an alert to a customer (cook or rider side) | `createNotification(uid, text)` | `src/services/notifications.ts` |
+| Send an alert to a customer (cook or rider side) | `createNotification(uid, text)`, `createNotifications(uids, text)` | `src/services/notifications.ts` |
+| Alert every customer who follows a cook (S3 → C8) | `notifyFollowers(cookId, change, dishName)` | `src/services/alert-prefs.ts` |
+| When a menu change deserves an alert, and its text | `newDishChange`, `cameBackOnSale`, `menuAlertText` | `src/utils/menu-alerts.ts` |
+| The order chat box, customer side (C6) or rider side (R2) | `ChatBox` with `otherRole` | `src/features/customer/chat-box.tsx` |
+| A cook edits their cook page | `updateKitchen`, `validateKitchenForm`, `KitchenForm` | `src/services/cooks.ts`, `src/utils/kitchen.ts`, `src/features/auth/kitchen-form.tsx` |
+| Offline strip above every screen | `OfflineBanner` | `src/components/offline-banner.tsx` |
 | A cook's reviews, newest first | `useCookReviews(cookId)` | `src/hooks/use-reviews.ts` |
 | Sold-out check, menu order | `isSoldOut(dish)`, `sortMenu(dishes)` | `src/utils/dish.ts` |
 | Money, dates, mobile numbers | `formatPrice`, `formatDate`, `formatMobile` | `src/utils/format.ts` |

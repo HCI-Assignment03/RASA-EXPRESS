@@ -25,7 +25,7 @@ export function useChat(orderId: string) {
   return {
     messages,
     error,
-    /** The id of the signed-in user, to tell their messages from the rider's. */
+    /** The id of the signed-in user, to tell their messages from the other person's. */
     myId: uid ?? '',
     send: async (text: string) => {
       if (uid && text.trim().length > 0) await sendMessage(orderId, uid, text);

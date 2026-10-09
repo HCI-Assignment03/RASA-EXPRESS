@@ -18,6 +18,7 @@ import {
 } from '@/features/customer/discover';
 import { FilterChip } from '@/features/customer/filter-chip';
 import { SearchBar } from '@/features/customer/search-bar';
+import { useCart } from '@/hooks/use-cart';
 import { useCooks } from '@/hooks/use-cooks';
 import { useDishes } from '@/hooks/use-dishes';
 import { useFavourites } from '@/hooks/use-favourites';
@@ -29,6 +30,7 @@ export default function DiscoverCooksScreen() {
   // Search also looks at dish names, so every dish is loaded (the data set is small).
   const { dishes } = useDishes(null);
   const { favouriteIds, toggle } = useFavourites();
+  const cart = useCart();
   const [filters, setFilters] = useState<DiscoverFilters>(NO_FILTERS);
 
   const results = filterCooks(cooks, dishes, filters);
@@ -54,14 +56,31 @@ export default function DiscoverCooksScreen() {
             <Text style={styles.locationText}>Galle Fort</Text>
           </View>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Favourites and alerts"
-          onPress={() => router.push('/customer/favourites')}
-          style={styles.bell}
-        >
-          <Ionicons name="notifications-outline" size={22} color={colors.text} />
-        </Pressable>
+        <View style={styles.headerButtons}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={
+              cart.count > 0 ? `Your cart, ${cart.count} items` : 'Your cart is empty'
+            }
+            onPress={() => router.push('/customer/checkout')}
+            style={styles.bell}
+          >
+            <Ionicons name="cart-outline" size={22} color={colors.text} />
+            {cart.count > 0 ? (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>{cart.count}</Text>
+              </View>
+            ) : null}
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Favourites and alerts"
+            onPress={() => router.push('/customer/favourites')}
+            style={styles.bell}
+          >
+            <Ionicons name="notifications-outline" size={22} color={colors.text} />
+          </Pressable>
+        </View>
       </View>
 
       <SearchBar
@@ -202,6 +221,7 @@ const styles = StyleSheet.create({
   deliverTo: { fontSize: fontSize.caption, color: colors.textMuted },
   location: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   locationText: { fontSize: fontSize.subtitle, fontWeight: '700', color: colors.text },
+  headerButtons: { flexDirection: 'row', gap: spacing.sm },
   bell: {
     width: minTapSize,
     height: minTapSize,
@@ -212,6 +232,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  cartBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 24,
+    height: 24,
+    paddingHorizontal: spacing.xs,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+  },
+  cartBadgeText: { fontSize: fontSize.caption, fontWeight: '800', color: colors.onPrimary },
   chips: { gap: spacing.sm, paddingRight: spacing.lg },
   banner: {
     flexDirection: 'row',

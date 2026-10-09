@@ -1,6 +1,7 @@
-import { collection, doc, onSnapshot, type Unsubscribe } from 'firebase/firestore';
+import { collection, doc, onSnapshot, updateDoc, type Unsubscribe } from 'firebase/firestore';
 
 import type { Cook, WithId } from '@/types';
+import type { KitchenInput } from '@/utils/kitchen';
 
 import { db } from './firebase';
 
@@ -28,4 +29,9 @@ export function subscribeToCook(
       onData(snapshot.exists() ? { id: snapshot.id, ...(snapshot.data() as Cook) } : null),
     onError,
   );
+}
+
+/** Update: the cook changes their own page (name, area, description, tags, pre-orders, times). */
+export async function updateKitchen(cookId: string, input: KitchenInput): Promise<void> {
+  await updateDoc(doc(db, 'cooks', cookId), input);
 }

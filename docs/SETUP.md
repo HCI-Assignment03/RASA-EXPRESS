@@ -144,6 +144,7 @@ Then open a Pull Request on GitHub. Full rules: `docs/GIT_WORKFLOW.md`.
 | Red screen "Firebase: Error (auth/invalid-api-key)" | `mobile/.env` is missing or has a typo. Restart with `npx expo start -c` (clears cache) |
 | Changes not showing | Shake the phone, tap **Reload**, or press `r` in the terminal |
 | Strange errors after `git pull` | In `mobile`: `npm install`, then `npx expo start -c` |
+| "Unable to resolve expo-network" | A package was added (09.10.2026). In `mobile`: `npm install`, then `npx expo start -c` |
 | Port 8081 already in use | Answer `Y` to use another port, or close the other terminal running Expo |
 | Merge conflict | Do not panic and do not delete files. Ask the lead; see `docs/GIT_WORKFLOW.md` |
 

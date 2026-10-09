@@ -196,7 +196,7 @@ function RiderCard({ order }: { order: WithId<Order> }) {
         ) : null}
       </View>
 
-      {canChat(order) ? <ChatBox orderId={order.id} riderName={name} /> : null}
+      {canChat(order) ? <ChatBox orderId={order.id} otherName={name} otherRole="rider" /> : null}
     </Card>
   );
 }

@@ -8,8 +8,19 @@ import { useChat } from '@/hooks/use-chat';
 
 const MAX_LENGTH = 200;
 
-/** The chat between the customer and the rider on C6. Create: send a message. */
-export function ChatBox({ orderId, riderName }: { orderId: string; riderName: string }) {
+type Props = {
+  orderId: string;
+  /** Name of the person on the other side. */
+  otherName: string;
+  /** Who that person is: the customer sees "rider", the rider sees "customer". */
+  otherRole: 'rider' | 'customer';
+};
+
+/**
+ * The chat between the customer and the rider of one order. Create: send a message.
+ * Used on C6 (customer side) and R2 (rider side), so both can read and reply.
+ */
+export function ChatBox({ orderId, otherName, otherRole }: Props) {
   const toast = useToast();
   const chat = useChat(orderId);
   const [text, setText] = useState('');
@@ -30,11 +41,11 @@ export function ChatBox({ orderId, riderName }: { orderId: string; riderName: st
 
   return (
     <View style={styles.box}>
-      <Text style={styles.title}>Chat with {riderName}</Text>
+      <Text style={styles.title}>Chat with {otherName}</Text>
 
       {chat.error ? <Text style={styles.error}>{chat.error}</Text> : null}
       {chat.messages.length === 0 && !chat.error ? (
-        <Text style={styles.empty}>No messages yet. Say hello to your rider.</Text>
+        <Text style={styles.empty}>No messages yet. Say hello to your {otherRole}.</Text>
       ) : null}
 
       <View style={styles.messages}>
@@ -50,7 +61,7 @@ export function ChatBox({ orderId, riderName }: { orderId: string; riderName: st
 
       <View style={styles.inputRow}>
         <TextInput
-          accessibilityLabel="Message to the rider"
+          accessibilityLabel={`Message to the ${otherRole}`}
           value={text}
           onChangeText={setText}
           placeholder="Type a message"
