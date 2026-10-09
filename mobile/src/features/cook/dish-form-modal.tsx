@@ -13,6 +13,7 @@ import {
   type DishFormValues,
   type DishInput,
 } from '@/utils/dish-form';
+import { ALL_ORIENTATIONS, CONTENT_MAX_WIDTH } from '@/utils/layout';
 
 type Props = {
   visible: boolean;
@@ -28,7 +29,12 @@ type Props = {
 /** The add / edit dish form of S3, shown over the menu. */
 export function DishFormModal(props: Props) {
   return (
-    <Modal visible={props.visible} animationType="slide" onRequestClose={props.onClose}>
+    <Modal
+      visible={props.visible}
+      animationType="slide"
+      supportedOrientations={ALL_ORIENTATIONS}
+      onRequestClose={props.onClose}
+    >
       {/* Remounted every time it opens, so the fields always start from `initial`. */}
       {props.visible ? <FormBody {...props} /> : null}
     </Modal>
@@ -162,6 +168,9 @@ export const NEW_DISH_FORM = EMPTY_DISH_FORM;
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
   header: {
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -175,7 +184,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  content: { gap: spacing.md, padding: spacing.lg },
+  content: {
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
+    gap: spacing.md,
+    padding: spacing.lg,
+  },
   section: { fontSize: fontSize.subtitle, fontWeight: '700', color: colors.text },
   pair: { flexDirection: 'row', gap: spacing.md },
   half: { flex: 1 },

@@ -81,3 +81,22 @@ export async function recordCashCollected(order: WithId<Order>): Promise<void> {
 export async function updateRiderLocation(orderId: string, location: LatLng): Promise<void> {
   await updateDoc(orderRef(orderId), { riderLocation: location });
 }
+
+/** Read, live: every order this rider has taken, finished or not (for the Profile tab numbers). */
+export function subscribeToRiderOrders(
+  uid: string,
+  onData: (orders: WithId<Order>[]) => void,
+  onError: (error: Error) => void,
+): Unsubscribe {
+  return onSnapshot(
+    query(collection(db, 'orders'), where('riderId', '==', uid)),
+    (snapshot) =>
+      onData(
+        snapshot.docs.map((d) => ({
+          id: d.id,
+          ...(d.data({ serverTimestamps: 'estimate' }) as Order),
+        })),
+      ),
+    onError,
+  );
+}

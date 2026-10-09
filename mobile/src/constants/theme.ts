@@ -21,11 +21,26 @@ export const colors = {
   danger: '#D64545',
   dangerSoft: '#FBE6E6',
   onPrimary: '#FFFFFF',
+  /** Star ratings. */
+  star: '#F5B301',
+  /** See-through white for the decorative circles and chips on orange panels. */
+  onPrimarySoft: 'rgba(255, 255, 255, 0.18)',
+  onPrimaryFaint: 'rgba(255, 255, 255, 0.10)',
 } as const;
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
 
-export const radius = { sm: 8, md: 12, lg: 16, pill: 999 } as const;
+export const radius = { sm: 8, md: 12, lg: 18, xl: 24, pill: 999 } as const;
+
+/**
+ * Soft, warm shadows. Cards float on the cream background instead of having hard borders.
+ * `boxShadow` works the same on Android and iOS (React Native new architecture).
+ */
+export const shadow = {
+  card: { boxShadow: '0px 4px 16px rgba(122, 62, 16, 0.08)' },
+  raised: { boxShadow: '0px 8px 20px rgba(217, 90, 16, 0.28)' },
+  bar: { boxShadow: '0px -4px 18px rgba(122, 62, 16, 0.08)' },
+} as const;
 
 // Nothing below 14 px: Milestone 02 issue U06 (readability for low-vision cooks).
 export const fontSize = { caption: 14, body: 16, subtitle: 18, title: 22, heading: 28 } as const;

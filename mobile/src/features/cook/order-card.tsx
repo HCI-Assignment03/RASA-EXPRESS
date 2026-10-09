@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, radius, shadow, spacing } from '@/constants/theme';
 import type { Order, WithId } from '@/types';
 import {
   STATUS_LABEL,
@@ -88,8 +88,7 @@ const styles = StyleSheet.create({
   card: {
     overflow: 'hidden',
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadow.card,
     backgroundColor: colors.surface,
   },
   body: { gap: spacing.sm, padding: spacing.lg },

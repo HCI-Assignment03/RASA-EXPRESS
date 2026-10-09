@@ -31,3 +31,20 @@ export function formatTimeAgo(date: Date, now: Date = new Date()): string {
   if (days < 7) return `${days} days ago`;
   return formatDate(date);
 }
+
+/** "Kawya Perera" becomes "KP", "Kawya" becomes "K". Shown in the profile avatar. */
+export function initials(name: string): string {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '?';
+  const first = words[0][0];
+  const last = words.length > 1 ? words[words.length - 1][0] : '';
+  return (first + last).toUpperCase();
+}
+
+/** "Good morning", "Good afternoon" or "Good evening" for the hour of `now`. */
+export function greeting(now: Date = new Date()): string {
+  const hour = now.getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}

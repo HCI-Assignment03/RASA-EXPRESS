@@ -1,28 +1,30 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useEffect, useState, type ComponentProps, type ReactNode } from 'react';
-import { ActivityIndicator, Alert, Linking, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Screen } from '@/components/screen';
 import { useToast } from '@/components/toast';
-import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
+import { ChatBox } from '@/features/customer/chat-box';
 import { TripMap } from '@/features/rider/trip-map';
 import { useCook } from '@/hooks/use-cooks';
 import { useRiderLocation } from '@/hooks/use-rider-location';
 import { useTrips } from '@/hooks/use-trips';
+import { useUserProfile } from '@/hooks/use-user-profile';
 import { updateRiderLocation } from '@/services/trips';
 import type { Order, WithId } from '@/types';
 import { formatDistance, riderFee } from '@/utils/delivery';
-import { formatPrice } from '@/utils/format';
+import { formatMobile, formatPrice } from '@/utils/format';
 import { distanceBetween, tripStops } from '@/utils/geo';
 import { tripStep, type TripStep } from '@/utils/trip';
 
 // R2 Active trip & navigation.
-// Read: address, landmark and map. Create: record the cash collected. Update: mark picked up and
-// delivered, and keep the rider's location up to date for the customer.
+// Read: address, landmark and map. Create: record the cash collected, reply in the chat.
+// Update: mark picked up and delivered, and keep the rider's location up to date for the customer.
 export default function ActiveTripScreen() {
   const trips = useTrips();
 
@@ -185,6 +187,8 @@ function TripView({ trip, waiting, onPickedUp, onCash, onDelivered }: TripViewPr
         </View>
       </Card>
 
+      <CustomerCard customerId={trip.customerId} orderId={trip.id} />
+
       {waiting > 0 ? (
         <Text style={styles.muted}>
           {waiting} more {waiting === 1 ? 'trip is' : 'trips are'} waiting after this one.
@@ -252,6 +256,37 @@ function StepButton({
       loading={busy}
       onPress={onDelivered}
     />
+  );
+}
+
+/** Who ordered: call them, or read and answer their messages (the chat they write on C6). */
+function CustomerCard({ customerId, orderId }: { customerId: string; orderId: string }) {
+  const { profile } = useUserProfile(customerId);
+  const name = profile?.name ?? 'The customer';
+
+  return (
+    <Card style={styles.card}>
+      <View style={styles.customerRow}>
+        <View style={styles.stopIcon}>
+          <Ionicons name="person-outline" size={20} color={colors.primaryDark} />
+        </View>
+        <View style={styles.stopText}>
+          <Text style={styles.stopLabel}>Customer</Text>
+          <Text style={styles.stopTitle}>{name}</Text>
+        </View>
+        {profile ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Call ${name} on ${formatMobile(profile.phone)}`}
+            onPress={() => Linking.openURL(`tel:${profile.phone}`)}
+            style={styles.call}
+          >
+            <Ionicons name="call" size={20} color={colors.onPrimary} />
+          </Pressable>
+        ) : null}
+      </View>
+      <ChatBox orderId={orderId} otherName={name} otherRole="customer" />
+    </Card>
   );
 }
 
@@ -347,6 +382,15 @@ const styles = StyleSheet.create({
   stopText: { flex: 1, gap: 2 },
   stopLabel: { fontSize: fontSize.caption, fontWeight: '600', color: colors.textMuted },
   stopTitle: { fontSize: fontSize.body, fontWeight: '700', color: colors.text },
+  customerRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  call: {
+    width: minTapSize,
+    height: minTapSize,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.success,
+  },
   itemRow: { gap: 2 },
   payRow: {
     flexDirection: 'row',

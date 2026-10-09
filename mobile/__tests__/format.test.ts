@@ -1,4 +1,11 @@
-import { formatDate, formatMobile, formatPrice, formatTimeAgo } from '../src/utils/format';
+import {
+  formatDate,
+  formatMobile,
+  formatPrice,
+  formatTimeAgo,
+  greeting,
+  initials,
+} from '../src/utils/format';
 
 describe('formatMobile', () => {
   it('groups a stored mobile number', () => {
@@ -47,5 +54,27 @@ describe('formatTimeAgo', () => {
 
   it('falls back to the date after a week', () => {
     expect(formatTimeAgo(ago(7 * 24 * 60), now)).toBe('1 Oct 2026');
+  });
+});
+
+describe('initials', () => {
+  it('takes the first letter of the first and last word', () => {
+    expect(initials('Kawya Perera')).toBe('KP');
+    expect(initials('Bhanuka A.')).toBe('BA');
+    expect(initials('  imasha  lakshan silva ')).toBe('IS');
+  });
+
+  it('copes with one word or no name', () => {
+    expect(initials('Kawya')).toBe('K');
+    expect(initials('   ')).toBe('?');
+  });
+});
+
+describe('greeting', () => {
+  it('follows the time of day', () => {
+    expect(greeting(new Date(2026, 9, 9, 8, 0))).toBe('Good morning');
+    expect(greeting(new Date(2026, 9, 9, 12, 0))).toBe('Good afternoon');
+    expect(greeting(new Date(2026, 9, 9, 16, 59))).toBe('Good afternoon');
+    expect(greeting(new Date(2026, 9, 9, 19, 30))).toBe('Good evening');
   });
 });

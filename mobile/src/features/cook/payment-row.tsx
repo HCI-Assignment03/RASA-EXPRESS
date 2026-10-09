@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constants/theme';
 import type { Payment, WithId } from '@/types';
 import { methodLabel, orderNumber } from '@/utils/cook-orders';
 import { formatPrice, formatTimeAgo } from '@/utils/format';
@@ -59,8 +59,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.md,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadow.card,
     backgroundColor: colors.surface,
   },
   icon: {

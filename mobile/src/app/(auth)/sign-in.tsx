@@ -3,15 +3,18 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
+import { FoodPlate } from '@/components/food-plate';
 import { Screen } from '@/components/screen';
 import { TextField } from '@/components/text-field';
 import { useToast } from '@/components/toast';
-import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constants/theme';
 import { useAuth } from '@/context/AuthContext';
 import { LanguageChips } from '@/features/auth/language-chips';
 import { RoleTiles } from '@/features/auth/role-tiles';
+import { useLayout } from '@/hooks/use-layout';
 import type { Language, Role } from '@/types';
 import { authErrorMessage } from '@/utils/auth-errors';
+import { WIDE_MAX_WIDTH } from '@/utils/layout';
 import {
   normalizeMobile,
   validateEmail,
@@ -21,6 +24,9 @@ import {
 } from '@/utils/validation';
 
 type Mode = 'signIn' | 'register';
+
+/** The sign-in column stays phone-sized on a tablet held upright. */
+const FORM_MAX_WIDTH = 560;
 type Field = 'name' | 'email' | 'mobile' | 'password';
 type FieldErrors = Partial<Record<Field, string>>;
 
@@ -43,6 +49,10 @@ export default function SignInScreen() {
   const [submitting, setSubmitting] = useState(false);
 
   const registering = mode === 'register';
+  // In landscape (tablet or phone on its side) the welcome panel and the form sit side by side;
+  // otherwise they are one centred column, in the middle of the screen when there is room.
+  const { wide, short, landscape } = useLayout();
+  const sideBySide = wide && landscape;
 
   function switchMode(next: Mode) {
     setMode(next);
@@ -88,120 +98,150 @@ export default function SignInScreen() {
   }
 
   return (
-    <Screen scroll edges={['top', 'bottom']}>
-      <View style={styles.hero}>
-        <View style={styles.logo}>
-          <Ionicons name="restaurant" size={44} color={colors.onPrimary} />
+    <Screen
+      scroll
+      edges={['top', 'bottom']}
+      maxWidth={sideBySide ? WIDE_MAX_WIDTH : FORM_MAX_WIDTH}
+    >
+      <View style={[styles.page, sideBySide ? styles.columns : styles.stack]}>
+        <View style={[styles.hero, sideBySide && styles.column]}>
+          <View style={[styles.circle, styles.circleBig]} />
+          <View style={[styles.circle, styles.circleSmall]} />
+          <View style={styles.plateRing}>
+            <FoodPlate size={short ? 64 : 84} />
+          </View>
+          <Text style={styles.brand}>RASA EXPRESS</Text>
+          <Text style={styles.tagline}>Home-cooked meals from trusted cooks near you</Text>
+          <View style={styles.highlights}>
+            <Highlight icon="shield-checkmark" label="Verified cooks" />
+            <Highlight icon="navigate" label="Live tracking" />
+            <Highlight icon="cash" label="Cash on delivery" />
+          </View>
         </View>
-        <Text style={styles.brand}>RASA EXPRESS</Text>
-        <Text style={styles.tagline}>Home-cooked meals from trusted cooks near you</Text>
-      </View>
 
-      <View style={styles.modeSwitch} accessibilityRole="tablist">
-        <ModeTab label="Sign in" selected={!registering} onPress={() => switchMode('signIn')} />
-        <ModeTab
-          label="Create account"
-          selected={registering}
-          onPress={() => switchMode('register')}
-        />
-      </View>
-
-      {registering ? <RoleTiles value={role} onChange={setRole} /> : null}
-
-      {registering ? (
-        <TextField
-          label="Your name"
-          value={name}
-          onChangeText={setName}
-          error={errors.name}
-          placeholder="e.g. Kawya Perera"
-          autoComplete="name"
-          textContentType="name"
-          returnKeyType="next"
-        />
-      ) : null}
-
-      <TextField
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        error={errors.email}
-        placeholder="you@example.com"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        autoComplete="email"
-        textContentType="emailAddress"
-        returnKeyType="next"
-      />
-
-      {registering ? (
-        <TextField
-          label="Mobile number"
-          prefix="+94"
-          value={mobile}
-          onChangeText={setMobile}
-          error={errors.mobile}
-          placeholder="77 123 4567"
-          keyboardType="phone-pad"
-          autoComplete="tel"
-          textContentType="telephoneNumber"
-          returnKeyType="next"
-        />
-      ) : null}
-
-      <TextField
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        error={errors.password}
-        placeholder={registering ? 'At least 6 characters' : 'Your password'}
-        secureTextEntry={!showPassword}
-        autoCapitalize="none"
-        autoCorrect={false}
-        autoComplete={registering ? 'new-password' : 'current-password'}
-        textContentType={registering ? 'newPassword' : 'password'}
-        returnKeyType="done"
-        onSubmitEditing={submit}
-        trailing={
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-            onPress={() => setShowPassword((shown) => !shown)}
-            hitSlop={8}
-            style={styles.eye}
-          >
-            <Ionicons
-              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-              size={22}
-              color={colors.textMuted}
+        <View style={[styles.stack, sideBySide && styles.column]}>
+          <View style={styles.modeSwitch} accessibilityRole="tablist">
+            <ModeTab label="Sign in" selected={!registering} onPress={() => switchMode('signIn')} />
+            <ModeTab
+              label="Create account"
+              selected={registering}
+              onPress={() => switchMode('register')}
             />
-          </Pressable>
-        }
-      />
+          </View>
 
-      {formError ? (
-        <View style={styles.formError} accessibilityLiveRegion="polite">
-          <Ionicons name="alert-circle-outline" size={20} color={colors.danger} />
-          <Text style={styles.formErrorText}>{formError}</Text>
+          {registering ? <RoleTiles value={role} onChange={setRole} /> : null}
+
+          {registering ? (
+            <TextField
+              label="Your name"
+              value={name}
+              onChangeText={setName}
+              error={errors.name}
+              placeholder="e.g. Kawya Perera"
+              autoComplete="name"
+              textContentType="name"
+              returnKeyType="next"
+            />
+          ) : null}
+
+          <TextField
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+            error={errors.email}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="email"
+            textContentType="emailAddress"
+            returnKeyType="next"
+          />
+
+          {registering ? (
+            <TextField
+              label="Mobile number"
+              prefix="+94"
+              value={mobile}
+              onChangeText={setMobile}
+              error={errors.mobile}
+              placeholder="77 123 4567"
+              keyboardType="phone-pad"
+              autoComplete="tel"
+              textContentType="telephoneNumber"
+              returnKeyType="next"
+            />
+          ) : null}
+
+          <TextField
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            error={errors.password}
+            placeholder={registering ? 'At least 6 characters' : 'Your password'}
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete={registering ? 'new-password' : 'current-password'}
+            textContentType={registering ? 'newPassword' : 'password'}
+            returnKeyType="done"
+            onSubmitEditing={submit}
+            trailing={
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                onPress={() => setShowPassword((shown) => !shown)}
+                hitSlop={8}
+                style={styles.eye}
+              >
+                <Ionicons
+                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={22}
+                  color={colors.textMuted}
+                />
+              </Pressable>
+            }
+          />
+
+          {formError ? (
+            <View style={styles.formError} accessibilityLiveRegion="polite">
+              <Ionicons name="alert-circle-outline" size={20} color={colors.danger} />
+              <Text style={styles.formErrorText}>{formError}</Text>
+            </View>
+          ) : null}
+
+          <Button
+            title={registering ? 'Create account' : 'Sign in'}
+            onPress={submit}
+            loading={submitting}
+          />
+
+          {registering ? (
+            <View style={styles.language}>
+              <Text style={styles.languageLabel}>Preferred language</Text>
+              <LanguageChips value={language} onChange={setLanguage} />
+            </View>
+          ) : null}
+
+          <Text style={styles.terms}>By continuing you agree to the Terms & Privacy Policy</Text>
         </View>
-      ) : null}
-
-      <Button
-        title={registering ? 'Create account' : 'Sign in'}
-        onPress={submit}
-        loading={submitting}
-      />
-
-      {registering ? (
-        <View style={styles.language}>
-          <Text style={styles.languageLabel}>Preferred language</Text>
-          <LanguageChips value={language} onChange={setLanguage} />
-        </View>
-      ) : null}
-
-      <Text style={styles.terms}>By continuing you agree to the Terms & Privacy Policy</Text>
+      </View>
     </Screen>
+  );
+}
+
+function Highlight({
+  icon,
+  label,
+}: {
+  icon: 'shield-checkmark' | 'navigate' | 'cash';
+  label: string;
+}) {
+  return (
+    <View style={styles.highlight}>
+      <Ionicons name={icon} size={14} color={colors.onPrimary} />
+      <Text style={styles.highlightText}>{label}</Text>
+    </View>
   );
 }
 
@@ -227,22 +267,53 @@ function ModeTab({
 }
 
 const styles = StyleSheet.create({
-  hero: { alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.lg },
-  logo: {
-    width: 88,
-    height: 88,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
+  page: { flexGrow: 1, justifyContent: 'center' },
+  stack: { gap: spacing.md },
+  columns: { flexDirection: 'row', alignItems: 'center', gap: spacing.xl },
+  column: { flex: 1 },
+  hero: {
+    overflow: 'hidden',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.xl,
+    backgroundColor: colors.primary,
+    ...shadow.raised,
+  },
+  circle: { position: 'absolute', borderRadius: 999, backgroundColor: colors.onPrimaryFaint },
+  circleBig: { width: 220, height: 220, top: -90, right: -70 },
+  circleSmall: { width: 140, height: 140, bottom: -60, left: -50 },
+  plateRing: {
+    padding: spacing.sm,
+    marginBottom: spacing.xs,
+    borderRadius: 999,
+    backgroundColor: colors.onPrimarySoft,
   },
   brand: {
-    fontSize: fontSize.title,
+    fontSize: fontSize.heading,
     fontWeight: '800',
-    letterSpacing: 1,
-    color: colors.primaryDark,
+    letterSpacing: 2,
+    color: colors.onPrimary,
   },
-  tagline: { fontSize: fontSize.body, color: colors.textMuted, textAlign: 'center' },
+  tagline: { fontSize: fontSize.body, color: colors.onPrimary, opacity: 0.92, textAlign: 'center' },
+  highlights: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+  },
+  highlight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.pill,
+    backgroundColor: colors.onPrimarySoft,
+  },
+  highlightText: { fontSize: fontSize.caption, fontWeight: '700', color: colors.onPrimary },
   modeSwitch: {
     flexDirection: 'row',
     padding: spacing.xs,

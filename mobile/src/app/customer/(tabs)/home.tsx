@@ -5,9 +5,12 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
+import { FoodPlate } from '@/components/food-plate';
+import { Grid } from '@/components/grid';
 import { Screen } from '@/components/screen';
 import { useToast } from '@/components/toast';
-import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
+import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constants/theme';
+import { useAuth } from '@/context/AuthContext';
 import { CookCard } from '@/features/customer/cook-card';
 import {
   NO_FILTERS,
@@ -18,19 +21,25 @@ import {
 } from '@/features/customer/discover';
 import { FilterChip } from '@/features/customer/filter-chip';
 import { SearchBar } from '@/features/customer/search-bar';
+import { useCart } from '@/hooks/use-cart';
 import { useCooks } from '@/hooks/use-cooks';
 import { useDishes } from '@/hooks/use-dishes';
 import { useFavourites } from '@/hooks/use-favourites';
+import { greeting } from '@/utils/format';
+import { WIDE_MAX_WIDTH } from '@/utils/layout';
 
 // C2 Discover cooks. Read: list, search and filter cooks. Create / Delete: the favourite heart.
 export default function DiscoverCooksScreen() {
   const toast = useToast();
+  const { profile } = useAuth();
   const { cooks, loading, error, reload } = useCooks();
   // Search also looks at dish names, so every dish is loaded (the data set is small).
   const { dishes } = useDishes(null);
   const { favouriteIds, toggle } = useFavourites();
+  const cart = useCart();
   const [filters, setFilters] = useState<DiscoverFilters>(NO_FILTERS);
 
+  const firstName = profile?.name.trim().split(/\s+/)[0] ?? '';
   const results = filterCooks(cooks, dishes, filters);
   const filtersActive = JSON.stringify(filters) !== JSON.stringify(NO_FILTERS);
 
@@ -45,7 +54,7 @@ export default function DiscoverCooksScreen() {
   };
 
   return (
-    <Screen scroll>
+    <Screen scroll maxWidth={WIDE_MAX_WIDTH}>
       <View style={styles.header}>
         <View>
           <Text style={styles.deliverTo}>Deliver to</Text>
@@ -54,14 +63,39 @@ export default function DiscoverCooksScreen() {
             <Text style={styles.locationText}>Galle Fort</Text>
           </View>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Favourites and alerts"
-          onPress={() => router.push('/customer/favourites')}
-          style={styles.bell}
-        >
-          <Ionicons name="notifications-outline" size={22} color={colors.text} />
-        </Pressable>
+        <View style={styles.headerButtons}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={
+              cart.count > 0 ? `Your cart, ${cart.count} items` : 'Your cart is empty'
+            }
+            onPress={() => router.push('/customer/checkout')}
+            style={styles.bell}
+          >
+            <Ionicons name="cart-outline" size={22} color={colors.text} />
+            {cart.count > 0 ? (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>{cart.count}</Text>
+              </View>
+            ) : null}
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Favourites and alerts"
+            onPress={() => router.push('/customer/favourites')}
+            style={styles.bell}
+          >
+            <Ionicons name="notifications-outline" size={22} color={colors.text} />
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.hello}>
+        <Text style={styles.helloTitle}>
+          {greeting()}
+          {firstName ? `, ${firstName}` : ''} 👋
+        </Text>
+        <Text style={styles.helloBody}>What would you like to eat today?</Text>
       </View>
 
       <SearchBar
@@ -73,6 +107,7 @@ export default function DiscoverCooksScreen() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
+        style={styles.chipScroll}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.chips}
       >
@@ -100,13 +135,19 @@ export default function DiscoverCooksScreen() {
         accessibilityRole="button"
         accessibilityLabel="Plan ahead, eat well. Show cooks that take pre-orders"
         onPress={() => setFilters((current) => ({ ...current, preorder: true }))}
-        style={styles.banner}
+        style={({ pressed }) => [styles.banner, pressed && styles.bannerPressed]}
       >
+        <View style={[styles.bannerCircle, styles.bannerCircleBig]} />
+        <View style={[styles.bannerCircle, styles.bannerCircleSmall]} />
         <View style={styles.bannerText}>
           <Text style={styles.bannerTitle}>Plan ahead, eat well</Text>
           <Text style={styles.bannerBody}>Pre-order Sunday lunch packets before 6 PM Saturday</Text>
+          <View style={styles.bannerCta}>
+            <Text style={styles.bannerCtaText}>See pre-order cooks</Text>
+            <Ionicons name="arrow-forward" size={16} color={colors.primaryDark} />
+          </View>
         </View>
-        <Ionicons name="calendar-outline" size={36} color={colors.onPrimary} />
+        <FoodPlate size={84} />
       </Pressable>
 
       <View style={styles.sectionHeader}>
@@ -140,15 +181,18 @@ export default function DiscoverCooksScreen() {
         />
       ) : null}
 
-      {results.map((cook) => (
-        <CookCard
-          key={cook.id}
-          cook={cook}
-          saved={favouriteIds.has(cook.id)}
-          onPress={() => openCook(cook.id)}
-          onToggleSaved={() => toggleSaved(cook.id)}
-        />
-      ))}
+      {/* One column of cooks on a phone, two or three side by side on wider screens. */}
+      <Grid>
+        {results.map((cook) => (
+          <CookCard
+            key={cook.id}
+            cook={cook}
+            saved={favouriteIds.has(cook.id)}
+            onPress={() => openCook(cook.id)}
+            onToggleSaved={() => toggleSaved(cook.id)}
+          />
+        ))}
+      </Grid>
     </Screen>
   );
 }
@@ -202,6 +246,7 @@ const styles = StyleSheet.create({
   deliverTo: { fontSize: fontSize.caption, color: colors.textMuted },
   location: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   locationText: { fontSize: fontSize.subtitle, fontWeight: '700', color: colors.text },
+  headerButtons: { flexDirection: 'row', gap: spacing.sm },
   bell: {
     width: minTapSize,
     height: minTapSize,
@@ -209,21 +254,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...shadow.card,
   },
+  cartBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 24,
+    height: 24,
+    paddingHorizontal: spacing.xs,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+  },
+  cartBadgeText: { fontSize: fontSize.caption, fontWeight: '800', color: colors.onPrimary },
+  // A ScrollView grows to fill spare height by default, which stretched the chips when few cooks showed.
+  chipScroll: { flexGrow: 0 },
   chips: { gap: spacing.sm, paddingRight: spacing.lg },
+  hello: { gap: 2 },
+  helloTitle: { fontSize: fontSize.title, fontWeight: '800', color: colors.text },
+  helloBody: { fontSize: fontSize.body, color: colors.textMuted },
   banner: {
+    overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.lg,
-    borderRadius: radius.lg,
+    borderRadius: radius.xl,
     backgroundColor: colors.primary,
+    ...shadow.raised,
   },
+  bannerPressed: { opacity: 0.95, transform: [{ scale: 0.99 }] },
+  bannerCircle: { position: 'absolute', borderRadius: 999, backgroundColor: colors.onPrimaryFaint },
+  bannerCircleBig: { width: 180, height: 180, top: -80, right: -40 },
+  bannerCircleSmall: { width: 90, height: 90, bottom: -40, left: 90 },
   bannerText: { flex: 1, gap: spacing.xs },
-  bannerTitle: { fontSize: fontSize.subtitle, fontWeight: '700', color: colors.onPrimary },
+  bannerTitle: { fontSize: fontSize.title, fontWeight: '800', color: colors.onPrimary },
   bannerBody: { fontSize: fontSize.caption, color: colors.onPrimary },
+  bannerCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs + 2,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface,
+  },
+  bannerCtaText: { fontSize: fontSize.caption, fontWeight: '800', color: colors.primaryDark },
   sectionHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   sectionTitle: { fontSize: fontSize.subtitle, fontWeight: '700', color: colors.text },
   count: { fontSize: fontSize.caption, color: colors.textMuted },

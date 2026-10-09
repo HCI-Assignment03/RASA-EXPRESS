@@ -128,9 +128,9 @@ It signs in to each test account, creating it the first time, and writes the coo
 
 The password is `SEED_PASSWORD` at the top of `mobile/scripts/seed.ts`. These are throw-away accounts for the shared development project only. Delete them in the Firebase console before sharing the project beyond the group.
 
-## Build the APK (later, when the app works)
+## Build the APK
 
-APK builds use Expo's cloud service (free tier), so no Android Studio is needed.
+APK builds use Expo's cloud service (free tier), so no Android Studio is needed. `mobile/eas.json` is already in the repo: its `preview` profile builds an APK. The app is named RASA EXPRESS (`app.json`), Android package `com.we15.rasaexpress`. The map is OpenStreetMap in a WebView, so no Google Maps key is needed.
 
 1. Create an account at https://expo.dev
 2. In `mobile/`:
@@ -138,15 +138,18 @@ APK builds use Expo's cloud service (free tier), so no Android Studio is needed.
 ```bash
 npm install -g eas-cli
 eas login
-eas build:configure
+eas init
 ```
 
-3. In the generated `mobile/eas.json`, make the `preview` profile produce an APK:
+`eas init` links the project to your Expo account and writes its `projectId` into `app.json`. Commit that change.
 
-```json
-"preview": { "distribution": "internal", "android": { "buildType": "apk" } }
+3. Give the build the Firebase settings. `mobile/.env` is not in git, so the cloud build cannot see it. Copy each of the six `EXPO_PUBLIC_FIREBASE_*` values from your `.env` into the `preview` environment, one command per value:
+
+```bash
+eas env:set --name EXPO_PUBLIC_FIREBASE_API_KEY --value <value> --environment preview --visibility plaintext
 ```
 
-4. Build: `eas build -p android --profile preview`. When it finishes (about 15 minutes), you get a download link. Install on an Android phone to test, and put the link in the report.
-5. `react-native-maps` on a standalone Android build needs a Google Maps API key in `app.json` (`android.config.googleMaps.apiKey`). Decide early whether to use a real map or a simulated route (log it in `docs/DEVIATIONS.md`).
-6. iOS builds need a paid Apple developer account. For iOS the group demonstrates in Expo Go and notes this limit in the report.
+Repeat for `AUTH_DOMAIN`, `PROJECT_ID`, `STORAGE_BUCKET`, `MESSAGING_SENDER_ID` and `APP_ID`, or add them on the project's Environment variables page at expo.dev. Without them the APK stops at start-up with "Firebase config missing".
+
+4. Build: `eas build -p android --profile preview`. When it finishes (about 15 minutes), you get a download link. Install on an Android phone to test (TC-INT-04), and put the link in the report.
+5. iOS builds need a paid Apple developer account. For iOS the group demonstrates in Expo Go and notes this limit in the report.

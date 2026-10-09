@@ -1,13 +1,14 @@
 import { Tabs } from 'expo-router';
 
-import { tabIcon, tabScreenOptions } from '@/components/tab-options';
+import { tabIcon, useTabScreenOptions } from '@/components/tab-options';
 import { useNotifications } from '@/hooks/use-notifications';
 
 export default function CustomerTabsLayout() {
+  const screenOptions = useTabScreenOptions();
   const { unreadCount } = useNotifications();
 
   return (
-    <Tabs screenOptions={tabScreenOptions}>
+    <Tabs screenOptions={screenOptions}>
       <Tabs.Screen
         name="home"
         options={{ title: 'Home', tabBarIcon: tabIcon('home', 'home-outline') }}

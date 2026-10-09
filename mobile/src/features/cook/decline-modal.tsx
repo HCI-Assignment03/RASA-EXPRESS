@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/button';
 import { TextField } from '@/components/text-field';
 import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
 import { DECLINE_REASONS, orderNumber } from '@/utils/cook-orders';
+import { ALL_ORIENTATIONS, SHEET_MAX_WIDTH } from '@/utils/layout';
 
 type Props = {
   /** The order being declined, or null when the form is closed. */
@@ -24,6 +25,7 @@ export function DeclineModal(props: Props) {
       visible={props.orderId !== null}
       transparent
       animationType="fade"
+      supportedOrientations={ALL_ORIENTATIONS}
       onRequestClose={props.onClose}
     >
       {/* Remounted each time it opens, so it always starts empty. */}
@@ -48,7 +50,13 @@ function Body({ orderId, saving, onConfirm, onClose }: Props & { orderId: string
 
   return (
     <SafeAreaView style={styles.backdrop}>
-      <View style={styles.sheet}>
+      {/* Scrolls when the phone is on its side and the sheet is taller than the screen. */}
+      <ScrollView
+        style={styles.sheet}
+        contentContainerStyle={styles.sheetContent}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
+      >
         <Text style={styles.title}>Decline {orderNumber(orderId)}?</Text>
         <Text style={styles.body}>The customer will see your reason.</Text>
 
@@ -105,7 +113,7 @@ function Body({ orderId, saving, onConfirm, onClose }: Props & { orderId: string
             style={styles.button}
           />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -118,11 +126,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(43, 33, 24, 0.55)',
   },
   sheet: {
-    gap: spacing.md,
-    padding: spacing.lg,
+    flexGrow: 0,
+    width: '100%',
+    maxWidth: SHEET_MAX_WIDTH,
+    alignSelf: 'center',
     borderRadius: radius.lg,
     backgroundColor: colors.background,
   },
+  sheetContent: { gap: spacing.md, padding: spacing.lg },
   title: { fontSize: fontSize.title, fontWeight: '800', color: colors.text },
   body: { fontSize: fontSize.body, color: colors.textMuted },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },

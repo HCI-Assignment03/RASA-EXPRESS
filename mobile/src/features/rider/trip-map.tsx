@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { useLayout } from '@/hooks/use-layout';
 import type { LatLng } from '@/types';
 
 import { buildMapHtml } from './map-html';
@@ -20,6 +21,9 @@ export function TripMap({ pickup, dropoff, rider }: Props) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const html = useMemo(() => buildMapHtml(pickup, dropoff), [pickup, dropoff]);
+  // Lower on a phone held sideways, taller on a tablet. Leaflet redraws itself when the size changes.
+  const { short, height } = useLayout();
+  const mapHeight = { height: short ? 200 : height >= 900 ? 360 : 260 };
 
   // Move the blue rider dot whenever the position changes, once the page has loaded.
   useEffect(() => {
@@ -30,7 +34,7 @@ export function TripMap({ pickup, dropoff, rider }: Props) {
 
   if (failed) {
     return (
-      <View style={[styles.map, styles.failed]}>
+      <View style={[styles.map, mapHeight, styles.failed]}>
         <Text style={styles.failedText}>
           The map could not load. Check your internet connection. You can still use the address and
           the Navigate button below.
@@ -40,7 +44,7 @@ export function TripMap({ pickup, dropoff, rider }: Props) {
   }
 
   return (
-    <View style={styles.map}>
+    <View style={[styles.map, mapHeight]}>
       <WebView
         ref={webView}
         accessibilityLabel="Map showing pickup, drop-off and your position"
@@ -58,7 +62,6 @@ export function TripMap({ pickup, dropoff, rider }: Props) {
 
 const styles = StyleSheet.create({
   map: {
-    height: 260,
     overflow: 'hidden',
     borderRadius: radius.lg,
     borderWidth: 1,

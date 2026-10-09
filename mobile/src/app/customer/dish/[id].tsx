@@ -21,11 +21,13 @@ import { QuantityStepper } from '@/components/quantity-stepper';
 import { useToast } from '@/components/toast';
 import { colors, fontSize, minTapSize, radius, spacing } from '@/constants/theme';
 import { useCart } from '@/hooks/use-cart';
+import { useLayout } from '@/hooks/use-layout';
 import { useCook } from '@/hooks/use-cooks';
 import { useDish } from '@/hooks/use-dishes';
 import type { Nutrition } from '@/types';
 import { isSoldOut } from '@/utils/dish';
 import { formatPrice } from '@/utils/format';
+import { CONTENT_MAX_WIDTH } from '@/utils/layout';
 
 const NOTE_MAX_LENGTH = 120;
 
@@ -35,6 +37,7 @@ const NOTE_MAX_LENGTH = 120;
 export default function DishDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
+  const { short } = useLayout();
   const toast = useToast();
 
   const { dish, loading, error, reload } = useDish(id);
@@ -129,10 +132,15 @@ export default function DishDetailsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.cover, { paddingTop: insets.top + spacing.lg }]}>
-          <FoodPlate size={168} />
+          <FoodPlate size={short ? 96 : 168} />
         </View>
 
-        <View style={styles.content}>
+        <View
+          style={[
+            styles.content,
+            { paddingLeft: spacing.lg + insets.left, paddingRight: spacing.lg + insets.right },
+          ]}
+        >
           <Card style={styles.card}>
             <Text style={styles.name}>{dish.name}</Text>
             <CookLink cookId={dish.cookId} />
@@ -217,22 +225,33 @@ export default function DishDetailsScreen() {
         accessibilityRole="button"
         accessibilityLabel="Go back"
         onPress={() => router.back()}
-        style={[styles.back, { top: insets.top + spacing.sm }]}
+        style={[styles.back, { top: insets.top + spacing.sm, left: spacing.lg + insets.left }]}
       >
         <Ionicons name="arrow-back" size={22} color={colors.text} />
       </Pressable>
 
-      <View style={[styles.bottomBar, { paddingBottom: insets.bottom + spacing.md }]}>
-        {soldOut ? (
-          <Button title="Sold out today" disabled onPress={() => {}} />
-        ) : (
-          <Button
-            title={`${inCart ? 'Update cart' : 'Add to cart'} · ${formatPrice(dish.price * qty)}`}
-            icon={inCart ? 'checkmark' : 'cart-outline'}
-            loading={saving}
-            onPress={onSubmit}
-          />
-        )}
+      <View
+        style={[
+          styles.bottomBar,
+          {
+            paddingBottom: insets.bottom + spacing.md,
+            paddingLeft: spacing.lg + insets.left,
+            paddingRight: spacing.lg + insets.right,
+          },
+        ]}
+      >
+        <View style={styles.bottomInner}>
+          {soldOut ? (
+            <Button title="Sold out today" disabled onPress={() => {}} />
+          ) : (
+            <Button
+              title={`${inCart ? 'Update cart' : 'Add to cart'} · ${formatPrice(dish.price * qty)}`}
+              icon={inCart ? 'checkmark' : 'cart-outline'}
+              loading={saving}
+              onPress={onSubmit}
+            />
+          )}
+        </View>
       </View>
     </View>
   );
@@ -291,7 +310,14 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl + spacing.lg,
     backgroundColor: colors.coverPeach,
   },
-  content: { gap: spacing.md, paddingHorizontal: spacing.lg, marginTop: -spacing.xl },
+  // A centred column on tablets and in landscape; the side padding (with the notch) is set inline.
+  content: {
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
+    gap: spacing.md,
+    marginTop: -spacing.xl,
+  },
   card: { gap: spacing.sm },
   name: { fontSize: fontSize.title, fontWeight: '800', color: colors.text },
   cookLink: {
@@ -340,7 +366,6 @@ const styles = StyleSheet.create({
   counter: { alignSelf: 'flex-end', fontSize: fontSize.caption, color: colors.textMuted },
   back: {
     position: 'absolute',
-    left: spacing.lg,
     width: minTapSize,
     height: minTapSize,
     borderRadius: minTapSize / 2,
@@ -353,9 +378,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    padding: spacing.lg,
+    paddingTop: spacing.lg,
     borderTopWidth: 1,
     borderTopColor: colors.border,
     backgroundColor: colors.background,
   },
+  bottomInner: { width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
 });
