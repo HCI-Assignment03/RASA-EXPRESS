@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { SHEET_MAX_WIDTH } from '@/utils/layout';
 
 /**
  * A strip at the top of every screen while the phone has no internet (Milestone 02 issue U10,
@@ -21,21 +22,30 @@ export function OfflineBanner() {
   return (
     <View
       pointerEvents="none"
-      accessibilityRole="alert"
-      accessibilityLiveRegion="polite"
-      style={[styles.banner, { top: insets.top + spacing.xs }]}
+      style={[
+        styles.row,
+        {
+          top: insets.top + spacing.xs,
+          paddingLeft: spacing.lg + insets.left,
+          paddingRight: spacing.lg + insets.right,
+        },
+      ]}
     >
-      <Ionicons name="cloud-offline-outline" size={18} color={colors.onPrimary} />
-      <Text style={styles.text}>You are offline. Live updates are paused until you reconnect.</Text>
+      <View accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.banner}>
+        <Ionicons name="cloud-offline-outline" size={18} color={colors.onPrimary} />
+        <Text style={styles.text}>
+          You are offline. Live updates are paused until you reconnect.
+        </Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  row: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   banner: {
-    position: 'absolute',
-    left: spacing.lg,
-    right: spacing.lg,
+    width: '100%',
+    maxWidth: SHEET_MAX_WIDTH,
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,

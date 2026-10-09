@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/button';
 import { TextField } from '@/components/text-field';
 import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { ALL_ORIENTATIONS, SHEET_MAX_WIDTH } from '@/utils/layout';
 import { parseSaleAmount } from '@/utils/sales';
 
 type Props = {
@@ -17,7 +18,13 @@ type Props = {
 /** The "Add cash sale" form of S4, for sales that did not come through the app. */
 export function CashSaleModal(props: Props) {
   return (
-    <Modal visible={props.visible} transparent animationType="fade" onRequestClose={props.onClose}>
+    <Modal
+      visible={props.visible}
+      transparent
+      animationType="fade"
+      supportedOrientations={ALL_ORIENTATIONS}
+      onRequestClose={props.onClose}
+    >
       {/* Remounted each time it opens, so it always starts empty. */}
       {props.visible ? <Body {...props} /> : null}
     </Modal>
@@ -40,7 +47,13 @@ function Body({ saving, onSave, onClose }: Props) {
 
   return (
     <SafeAreaView style={styles.backdrop}>
-      <View style={styles.sheet}>
+      {/* Scrolls when the phone is on its side and the sheet is taller than the screen. */}
+      <ScrollView
+        style={styles.sheet}
+        contentContainerStyle={styles.sheetContent}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
+      >
         <Text style={styles.title}>Add cash sale</Text>
         <Text style={styles.body}>For a customer who paid you directly, not through the app.</Text>
 
@@ -80,7 +93,7 @@ function Body({ saving, onSave, onClose }: Props) {
             style={styles.button}
           />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -93,11 +106,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(43, 33, 24, 0.55)',
   },
   sheet: {
-    gap: spacing.md,
-    padding: spacing.lg,
+    flexGrow: 0,
+    width: '100%',
+    maxWidth: SHEET_MAX_WIDTH,
+    alignSelf: 'center',
     borderRadius: radius.lg,
     backgroundColor: colors.background,
   },
+  sheetContent: { gap: spacing.md, padding: spacing.lg },
   title: { fontSize: fontSize.title, fontWeight: '800', color: colors.text },
   body: { fontSize: fontSize.body, color: colors.textMuted },
   buttons: { flexDirection: 'row', gap: spacing.md },

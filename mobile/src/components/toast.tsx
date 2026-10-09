@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import { Animated, StyleSheet, Text } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors, fontSize, radius, spacing } from '@/constants/theme';
+import { SHEET_MAX_WIDTH } from '@/utils/layout';
 
 type ToastTone = 'success' | 'error' | 'info';
 type ToastState = { id: number; message: string; tone: ToastTone } | null;
@@ -50,11 +51,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           pointerEvents="none"
           accessibilityLiveRegion="polite"
           style={[
-            styles.toast,
-            { top: insets.top + spacing.sm, opacity, backgroundColor: BACKGROUND[toast.tone] },
+            styles.toastRow,
+            {
+              top: insets.top + spacing.sm,
+              paddingLeft: spacing.lg + insets.left,
+              paddingRight: spacing.lg + insets.right,
+              opacity,
+            },
           ]}
         >
-          <Text style={styles.text}>{toast.message}</Text>
+          <View style={[styles.toast, { backgroundColor: BACKGROUND[toast.tone] }]}>
+            <Text style={styles.text}>{toast.message}</Text>
+          </View>
         </Animated.View>
       ) : null}
     </ToastContext.Provider>
@@ -69,10 +77,11 @@ export function useToast(): ToastContextValue {
 }
 
 const styles = StyleSheet.create({
+  // Full width row, so the toast can be centred with a maximum width on tablets and in landscape.
+  toastRow: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   toast: {
-    position: 'absolute',
-    left: spacing.lg,
-    right: spacing.lg,
+    width: '100%',
+    maxWidth: SHEET_MAX_WIDTH,
     padding: spacing.md,
     borderRadius: radius.md,
   },

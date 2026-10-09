@@ -18,7 +18,7 @@ Requirement → prototype interface (Milestone 02) → implemented screen → te
 | NFR02 | Secure authentication | C1 | `(auth)/sign-in.tsx` | Kulathunga | TC-C1-01 to 13, 20 |
 | NFR03 | Secure online payment | C5 | `customer/checkout.tsx` | Fernando | |
 | NFR04 | Reasonable response time | All | All | All | |
-| NFR05 | Android and iOS | All | All | All | TC-INT-04 (APK), Expo Go on iPhone and Android |
+| NFR05 | Android and iOS | All | All | All | TC-INT-04 (APK), TC-INT-05 to 09 (rotation, tablets), Expo Go on iPhone and Android |
 | NFR06 | High availability | Back end | Firebase | Kulathunga | TC-INT-03 (offline banner) |
 | NFR07 | Easy to learn | C1, S1-S3 | | Kulathunga, Manawadu | (SUS) |
 | NFR08 | Real-time notifications | C6, C8 | `customer/track/[orderId].tsx`, `customer/(tabs)/favourites.tsx`, the tab bars of all three roles | Fernando, Lowe | TC-C2-10, TC-C6-04, TC-C8-03 to 08, 13 to 16, TC-S1-16, TC-R1-11, TC-R2-17, TC-INT-02 |

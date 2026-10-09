@@ -6,6 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { FoodPlate } from '@/components/food-plate';
+import { Grid } from '@/components/grid';
 import { Screen } from '@/components/screen';
 import { useToast } from '@/components/toast';
 import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constants/theme';
@@ -25,6 +26,7 @@ import { useCooks } from '@/hooks/use-cooks';
 import { useDishes } from '@/hooks/use-dishes';
 import { useFavourites } from '@/hooks/use-favourites';
 import { greeting } from '@/utils/format';
+import { WIDE_MAX_WIDTH } from '@/utils/layout';
 
 // C2 Discover cooks. Read: list, search and filter cooks. Create / Delete: the favourite heart.
 export default function DiscoverCooksScreen() {
@@ -52,7 +54,7 @@ export default function DiscoverCooksScreen() {
   };
 
   return (
-    <Screen scroll>
+    <Screen scroll maxWidth={WIDE_MAX_WIDTH}>
       <View style={styles.header}>
         <View>
           <Text style={styles.deliverTo}>Deliver to</Text>
@@ -179,15 +181,18 @@ export default function DiscoverCooksScreen() {
         />
       ) : null}
 
-      {results.map((cook) => (
-        <CookCard
-          key={cook.id}
-          cook={cook}
-          saved={favouriteIds.has(cook.id)}
-          onPress={() => openCook(cook.id)}
-          onToggleSaved={() => toggleSaved(cook.id)}
-        />
-      ))}
+      {/* One column of cooks on a phone, two or three side by side on wider screens. */}
+      <Grid>
+        {results.map((cook) => (
+          <CookCard
+            key={cook.id}
+            cook={cook}
+            saved={favouriteIds.has(cook.id)}
+            onPress={() => openCook(cook.id)}
+            onToggleSaved={() => toggleSaved(cook.id)}
+          />
+        ))}
+      </Grid>
     </Screen>
   );
 }

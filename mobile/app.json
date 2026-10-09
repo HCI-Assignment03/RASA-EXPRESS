@@ -3,13 +3,13 @@
     "name": "RASA EXPRESS",
     "slug": "rasa-express",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "rasaexpress",
     "userInterfaceStyle": "light",
     "ios": {
       "bundleIdentifier": "com.we15.rasaexpress",
-      "supportsTablet": false
+      "supportsTablet": true
     },
     "android": {
       "package": "com.we15.rasaexpress",

@@ -50,6 +50,8 @@ mobile/
 
 Rules: screens call **services**; services talk to Firestore; screens never call Firestore directly. This keeps CRUD logic testable and easy to explain in the viva.
 
+**Screen sizes and rotation.** `app.json` allows both orientations and iPad. Every screen is wrapped in `Screen`, which pads the safe areas on all sides (the notch is on the side in landscape) and keeps the content in a centred column (`maxWidth`, 720 by default). A screen that builds its own layout (C3, C4) does the same by hand. Every `Modal` passes `supportedOrientations={ALL_ORIENTATIONS}`, or iOS turns the phone back to portrait when it opens. Use `useLayout()` for anything that should change with the screen shape.
+
 **How routing works.** The root layout wraps the app in `AuthProvider` and `ToastProvider`. `Stack.Protected` only lets a signed-in user into the folder of their own role, and sends everyone else back to `/`, which redirects. The tab layouts match the bottom navigation in the Milestone 02 prototype and show live number badges (D13). Every interface started as a placeholder screen that its owner replaced; all 14 are built and the placeholder component has been removed. An `OfflineBanner` sits above every screen.
 
 Screen to file mapping (URL in the last column):
@@ -144,6 +146,9 @@ Changing a field name affects teammates: tell the group first.
 | The order chat box, customer side (C6) or rider side (R2) | `ChatBox` with `otherRole` | `src/features/customer/chat-box.tsx` |
 | A cook edits their cook page | `updateKitchen`, `validateKitchenForm`, `KitchenForm` | `src/services/cooks.ts`, `src/utils/kitchen.ts`, `src/features/auth/kitchen-form.tsx` |
 | Offline strip above every screen | `OfflineBanner` | `src/components/offline-banner.tsx` |
+| Screen shape: landscape, short (phone on its side), compact (narrow phone), wide (tablet / landscape) | `useLayout()`, `layoutFor` | `src/hooks/use-layout.ts`, `src/utils/layout.ts` |
+| Cards in 1, 2 or 3 columns by available width | `<Grid>` | `src/components/grid.tsx` |
+| Width limits and the orientations a `Modal` allows | `CONTENT_MAX_WIDTH`, `WIDE_MAX_WIDTH`, `SHEET_MAX_WIDTH`, `ALL_ORIENTATIONS` | `src/utils/layout.ts` |
 | Card shadows, the orange glow of main buttons | `shadow.card`, `shadow.raised` | `src/constants/theme.ts` |
 | Bottom tab bar look (orange pill on the selected tab) | `useTabScreenOptions()`, `tabIcon()` | `src/components/tab-options.tsx` |
 | Profile header, number tiles, settings-style link rows, kitchen card | `ProfileHero`, `StatTiles`, `LinkList`, `KitchenCard` | `src/features/account/` |

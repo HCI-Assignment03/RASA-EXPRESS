@@ -11,8 +11,10 @@ import { colors, fontSize, minTapSize, radius, shadow, spacing } from '@/constan
 import { useAuth } from '@/context/AuthContext';
 import { LanguageChips } from '@/features/auth/language-chips';
 import { RoleTiles } from '@/features/auth/role-tiles';
+import { useLayout } from '@/hooks/use-layout';
 import type { Language, Role } from '@/types';
 import { authErrorMessage } from '@/utils/auth-errors';
+import { WIDE_MAX_WIDTH } from '@/utils/layout';
 import {
   normalizeMobile,
   validateEmail,
@@ -22,6 +24,9 @@ import {
 } from '@/utils/validation';
 
 type Mode = 'signIn' | 'register';
+
+/** The sign-in column stays phone-sized on a tablet held upright. */
+const FORM_MAX_WIDTH = 560;
 type Field = 'name' | 'email' | 'mobile' | 'password';
 type FieldErrors = Partial<Record<Field, string>>;
 
@@ -44,6 +49,10 @@ export default function SignInScreen() {
   const [submitting, setSubmitting] = useState(false);
 
   const registering = mode === 'register';
+  // In landscape (tablet or phone on its side) the welcome panel and the form sit side by side;
+  // otherwise they are one centred column, in the middle of the screen when there is room.
+  const { wide, short, landscape } = useLayout();
+  const sideBySide = wide && landscape;
 
   function switchMode(next: Mode) {
     setMode(next);
@@ -89,126 +98,134 @@ export default function SignInScreen() {
   }
 
   return (
-    <Screen scroll edges={['top', 'bottom']}>
-      <View style={styles.hero}>
-        <View style={[styles.circle, styles.circleBig]} />
-        <View style={[styles.circle, styles.circleSmall]} />
-        <View style={styles.plateRing}>
-          <FoodPlate size={84} />
+    <Screen
+      scroll
+      edges={['top', 'bottom']}
+      maxWidth={sideBySide ? WIDE_MAX_WIDTH : FORM_MAX_WIDTH}
+    >
+      <View style={[styles.page, sideBySide ? styles.columns : styles.stack]}>
+        <View style={[styles.hero, sideBySide && styles.column]}>
+          <View style={[styles.circle, styles.circleBig]} />
+          <View style={[styles.circle, styles.circleSmall]} />
+          <View style={styles.plateRing}>
+            <FoodPlate size={short ? 64 : 84} />
+          </View>
+          <Text style={styles.brand}>RASA EXPRESS</Text>
+          <Text style={styles.tagline}>Home-cooked meals from trusted cooks near you</Text>
+          <View style={styles.highlights}>
+            <Highlight icon="shield-checkmark" label="Verified cooks" />
+            <Highlight icon="navigate" label="Live tracking" />
+            <Highlight icon="cash" label="Cash on delivery" />
+          </View>
         </View>
-        <Text style={styles.brand}>RASA EXPRESS</Text>
-        <Text style={styles.tagline}>Home-cooked meals from trusted cooks near you</Text>
-        <View style={styles.highlights}>
-          <Highlight icon="shield-checkmark" label="Verified cooks" />
-          <Highlight icon="navigate" label="Live tracking" />
-          <Highlight icon="cash" label="Cash on delivery" />
-        </View>
-      </View>
 
-      <View style={styles.modeSwitch} accessibilityRole="tablist">
-        <ModeTab label="Sign in" selected={!registering} onPress={() => switchMode('signIn')} />
-        <ModeTab
-          label="Create account"
-          selected={registering}
-          onPress={() => switchMode('register')}
-        />
-      </View>
-
-      {registering ? <RoleTiles value={role} onChange={setRole} /> : null}
-
-      {registering ? (
-        <TextField
-          label="Your name"
-          value={name}
-          onChangeText={setName}
-          error={errors.name}
-          placeholder="e.g. Kawya Perera"
-          autoComplete="name"
-          textContentType="name"
-          returnKeyType="next"
-        />
-      ) : null}
-
-      <TextField
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        error={errors.email}
-        placeholder="you@example.com"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        autoComplete="email"
-        textContentType="emailAddress"
-        returnKeyType="next"
-      />
-
-      {registering ? (
-        <TextField
-          label="Mobile number"
-          prefix="+94"
-          value={mobile}
-          onChangeText={setMobile}
-          error={errors.mobile}
-          placeholder="77 123 4567"
-          keyboardType="phone-pad"
-          autoComplete="tel"
-          textContentType="telephoneNumber"
-          returnKeyType="next"
-        />
-      ) : null}
-
-      <TextField
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        error={errors.password}
-        placeholder={registering ? 'At least 6 characters' : 'Your password'}
-        secureTextEntry={!showPassword}
-        autoCapitalize="none"
-        autoCorrect={false}
-        autoComplete={registering ? 'new-password' : 'current-password'}
-        textContentType={registering ? 'newPassword' : 'password'}
-        returnKeyType="done"
-        onSubmitEditing={submit}
-        trailing={
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-            onPress={() => setShowPassword((shown) => !shown)}
-            hitSlop={8}
-            style={styles.eye}
-          >
-            <Ionicons
-              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-              size={22}
-              color={colors.textMuted}
+        <View style={[styles.stack, sideBySide && styles.column]}>
+          <View style={styles.modeSwitch} accessibilityRole="tablist">
+            <ModeTab label="Sign in" selected={!registering} onPress={() => switchMode('signIn')} />
+            <ModeTab
+              label="Create account"
+              selected={registering}
+              onPress={() => switchMode('register')}
             />
-          </Pressable>
-        }
-      />
+          </View>
 
-      {formError ? (
-        <View style={styles.formError} accessibilityLiveRegion="polite">
-          <Ionicons name="alert-circle-outline" size={20} color={colors.danger} />
-          <Text style={styles.formErrorText}>{formError}</Text>
+          {registering ? <RoleTiles value={role} onChange={setRole} /> : null}
+
+          {registering ? (
+            <TextField
+              label="Your name"
+              value={name}
+              onChangeText={setName}
+              error={errors.name}
+              placeholder="e.g. Kawya Perera"
+              autoComplete="name"
+              textContentType="name"
+              returnKeyType="next"
+            />
+          ) : null}
+
+          <TextField
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+            error={errors.email}
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="email"
+            textContentType="emailAddress"
+            returnKeyType="next"
+          />
+
+          {registering ? (
+            <TextField
+              label="Mobile number"
+              prefix="+94"
+              value={mobile}
+              onChangeText={setMobile}
+              error={errors.mobile}
+              placeholder="77 123 4567"
+              keyboardType="phone-pad"
+              autoComplete="tel"
+              textContentType="telephoneNumber"
+              returnKeyType="next"
+            />
+          ) : null}
+
+          <TextField
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            error={errors.password}
+            placeholder={registering ? 'At least 6 characters' : 'Your password'}
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete={registering ? 'new-password' : 'current-password'}
+            textContentType={registering ? 'newPassword' : 'password'}
+            returnKeyType="done"
+            onSubmitEditing={submit}
+            trailing={
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                onPress={() => setShowPassword((shown) => !shown)}
+                hitSlop={8}
+                style={styles.eye}
+              >
+                <Ionicons
+                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  size={22}
+                  color={colors.textMuted}
+                />
+              </Pressable>
+            }
+          />
+
+          {formError ? (
+            <View style={styles.formError} accessibilityLiveRegion="polite">
+              <Ionicons name="alert-circle-outline" size={20} color={colors.danger} />
+              <Text style={styles.formErrorText}>{formError}</Text>
+            </View>
+          ) : null}
+
+          <Button
+            title={registering ? 'Create account' : 'Sign in'}
+            onPress={submit}
+            loading={submitting}
+          />
+
+          {registering ? (
+            <View style={styles.language}>
+              <Text style={styles.languageLabel}>Preferred language</Text>
+              <LanguageChips value={language} onChange={setLanguage} />
+            </View>
+          ) : null}
+
+          <Text style={styles.terms}>By continuing you agree to the Terms & Privacy Policy</Text>
         </View>
-      ) : null}
-
-      <Button
-        title={registering ? 'Create account' : 'Sign in'}
-        onPress={submit}
-        loading={submitting}
-      />
-
-      {registering ? (
-        <View style={styles.language}>
-          <Text style={styles.languageLabel}>Preferred language</Text>
-          <LanguageChips value={language} onChange={setLanguage} />
-        </View>
-      ) : null}
-
-      <Text style={styles.terms}>By continuing you agree to the Terms & Privacy Policy</Text>
+      </View>
     </Screen>
   );
 }
@@ -250,6 +267,10 @@ function ModeTab({
 }
 
 const styles = StyleSheet.create({
+  page: { flexGrow: 1, justifyContent: 'center' },
+  stack: { gap: spacing.md },
+  columns: { flexDirection: 'row', alignItems: 'center', gap: spacing.xl },
+  column: { flex: 1 },
   hero: {
     overflow: 'hidden',
     alignItems: 'center',

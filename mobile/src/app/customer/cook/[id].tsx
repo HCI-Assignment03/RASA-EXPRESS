@@ -25,10 +25,12 @@ import { useCart } from '@/hooks/use-cart';
 import { useCook } from '@/hooks/use-cooks';
 import { useDishes } from '@/hooks/use-dishes';
 import { useFavourites } from '@/hooks/use-favourites';
+import { useLayout } from '@/hooks/use-layout';
 import { useCookReviews } from '@/hooks/use-reviews';
 import type { Cook, Dish, WithId } from '@/types';
 import { sortMenu } from '@/utils/dish';
 import { formatPrice } from '@/utils/format';
+import { CONTENT_MAX_WIDTH } from '@/utils/layout';
 
 type Tab = 'menu' | 'reviews' | 'about';
 
@@ -38,6 +40,7 @@ type Tab = 'menu' | 'reviews' | 'about';
 export default function CookProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
+  const { short } = useLayout();
   const toast = useToast();
 
   const { cook, loading, error, reload } = useCook(id);
@@ -107,10 +110,15 @@ export default function CookProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.cover, { paddingTop: insets.top + spacing.lg }]}>
-          <FoodPlate size={132} />
+          <FoodPlate size={short ? 88 : 132} />
         </View>
 
-        <View style={styles.content}>
+        <View
+          style={[
+            styles.content,
+            { paddingLeft: spacing.lg + insets.left, paddingRight: spacing.lg + insets.right },
+          ]}
+        >
           <CookInfo cook={cook} />
           <TabBar value={tab} onChange={setTab} />
 
@@ -128,7 +136,17 @@ export default function CookProfileScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.topButtons, { top: insets.top + spacing.sm }]} pointerEvents="box-none">
+      <View
+        style={[
+          styles.topButtons,
+          {
+            top: insets.top + spacing.sm,
+            left: spacing.lg + insets.left,
+            right: spacing.lg + insets.right,
+          },
+        ]}
+        pointerEvents="box-none"
+      >
         <RoundButton icon="arrow-back" label="Go back" onPress={() => router.back()} />
         <RoundButton
           icon={saved ? 'heart' : 'heart-outline'}
@@ -139,19 +157,31 @@ export default function CookProfileScreen() {
       </View>
 
       {cart.count > 0 ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`View cart, ${cart.count} items, ${formatPrice(cart.total)}`}
-          onPress={() => router.push('/customer/checkout')}
-          style={[styles.cartBar, { bottom: insets.bottom + spacing.md }]}
+        <View
+          pointerEvents="box-none"
+          style={[
+            styles.cartRow,
+            {
+              bottom: insets.bottom + spacing.md,
+              paddingLeft: spacing.lg + insets.left,
+              paddingRight: spacing.lg + insets.right,
+            },
+          ]}
         >
-          <View style={styles.cartCount}>
-            <Ionicons name="cart-outline" size={20} color={colors.primaryDark} />
-            <Text style={styles.cartCountText}>{cart.count}</Text>
-          </View>
-          <Text style={styles.cartLabel}>View cart</Text>
-          <Text style={styles.cartTotal}>{formatPrice(cart.total)}</Text>
-        </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`View cart, ${cart.count} items, ${formatPrice(cart.total)}`}
+            onPress={() => router.push('/customer/checkout')}
+            style={styles.cartBar}
+          >
+            <View style={styles.cartCount}>
+              <Ionicons name="cart-outline" size={20} color={colors.primaryDark} />
+              <Text style={styles.cartCountText}>{cart.count}</Text>
+            </View>
+            <Text style={styles.cartLabel}>View cart</Text>
+            <Text style={styles.cartTotal}>{formatPrice(cart.total)}</Text>
+          </Pressable>
+        </View>
       ) : null}
     </View>
   );
@@ -375,11 +405,16 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl + spacing.lg,
     backgroundColor: colors.coverPeach,
   },
-  content: { gap: spacing.md, paddingHorizontal: spacing.lg, marginTop: -spacing.xl },
+  // A centred column on tablets and in landscape; the side padding (with the notch) is set inline.
+  content: {
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: 'center',
+    gap: spacing.md,
+    marginTop: -spacing.xl,
+  },
   topButtons: {
     position: 'absolute',
-    left: spacing.lg,
-    right: spacing.lg,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -433,10 +468,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.text,
   },
+  // Full-width row that centres the cart bar, so it keeps a phone-like width on tablets.
+  cartRow: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   cartBar: {
-    position: 'absolute',
-    left: spacing.lg,
-    right: spacing.lg,
+    width: '100%',
+    maxWidth: CONTENT_MAX_WIDTH - spacing.lg * 2,
     minHeight: 56,
     flexDirection: 'row',
     alignItems: 'center',
